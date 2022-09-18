@@ -22,3 +22,6 @@ _In plain english - no code - think through how you'll make this game work. Exam
 
 ## Notes for instructor
 *any notes for me to refer to while grading; if none, omit this section*
+
+# commit logs
+sep 18 - add require - for week 3 assignment
