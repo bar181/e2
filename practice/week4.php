@@ -144,7 +144,7 @@ $p2 = $moves[rand(0,2)];
 $winner = 'tie';
 if($p1 = 'rock' && $p2 == 'paper') {
     $winner = '1';
-} elseif($p2 = 'rock' && $p1 == 'paper'{
+} elseif($p2 = 'rock' && $p1 == 'paper'){
     $winner = '2';
 }
 // continue for other options
