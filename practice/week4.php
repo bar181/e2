@@ -148,3 +148,7 @@ if($p1 = 'rock' && $p2 == 'paper') {
     $winner = '2';
 }
 // continue for other options
+
+
+$total = 0;
+var_dump(($total <= 30 or $total > 50));
