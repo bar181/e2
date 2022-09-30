@@ -5,28 +5,48 @@
 # ----------- set global variables and defaults -----------
 
 # game play variables (constants)
+/*
+End of game when the player has lost everything or doubled their money
+
+You may alter the game rules:
+
+startingCash: (int) how much cash both the dealer and player have at the start
+betAmount: (int) wager placed for each hand (tie returns cash)
+numberOfDecks: (int) number of decks used 
+shuffleTurn: (bool) true means the deck gets shuffled after each round 
+reshufflePercent: (decimal) when does the deck automatically get shuffled (usually at 50% of deck size)
+*/
+
 $gameRules = [
     'startingCash' => 100, 
     'betAmount' => 10, 
-    'numberOfDecks' => 1, 
+    'numberOfDecks' => 6, 
     'shuffleTurn' => false, 
+    'reshufflePercent' => 0.5, 
  ];
- $gameRules['shoeSize'] =  intval(0.5 * 52 * $gameRules['numberOfDecks']);
+
+ $gameRules['shoeSize'] =  intval($gameRules['reshufflePercent'] * 52 * $gameRules['numberOfDecks']);
+
+ $totalPlayerWins = 0;
+ $totalDealerWins = 0;
+ $totalTies = 0;
+
+
 
 # logic for when to hit or stand
 /*
 standAverageCards: player stands at this value (cutoff) or more if dealer shows a 2,3,7,8,9
-standGoodCards: stand cutoff if dealer 4,5,6
-standBadCards: stand cutoff if dealer face card or ace
-dealerStand: casino rules where dealer must hit on 16 or less (hit on soft 17)
+standGoodCards: stand cutoff if dealer shows 4,5,6
+standBadCards: stand cutoff if dealer shows face card or ace
+dealerStand: casino rules where dealer must hit on 16 or less (stand on soft 17)
 */
 $aiLogic = [
-    'standardStand' => 15, 
-    'goodStand' => 12, 
+    'standardStand' => 14, 
+    'goodStand' => 11, 
     'goodCards' => [4,5,6], 
-    'badStand' => 17, 
+    'badStand' => 16, 
     'badCards' => [10,11], 
-    'dealerStand' => 16,
+    'dealerStand' => 17,
 ];
 
 
@@ -110,7 +130,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
     if ((count($deck) < $gameRules['shoeSize']) || $gameRules['shuffleTurn']) {
         $deck = $ogDeck;
         shuffle($deck);
-        echo "<br>Everybody's shuffling ! ";
+        // echo "<br>Everybody's shuffling ! ";
     }
 
     # set default player and dealer round details
@@ -177,7 +197,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
             # you are in a good position (dealer has bad cards) - stand earlier
             $standDecision = $aiLogic['goodStand'];
         }
-        if ($score > $standDecision) {
+        if ($score >= $standDecision) {
             $isHit = false;
         }
 
@@ -225,7 +245,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
         }
 
         # basic stand decision
-        if ($score > $aiLogic['dealerStand']) {
+        if ($score >= $aiLogic['dealerStand']) {
             $isHit = false;
         }
 
@@ -254,12 +274,12 @@ while ($playerCash > 0 && $dealerCash > 0) {
             # player has higher score - player wins bet
             $playerCash += $gameRules['betAmount'];
             $dealerCash -= $gameRules['betAmount'];
-            $round['winner'] = "Player - scored ----------";
+            $round['winner'] = "Player";
         } elseif ($round['player']['cardValues'] <  $round['dealer']['cardValues']) {
             # dealer has higher score - dealer wins bet
             $playerCash -= $gameRules['betAmount'];
             $dealerCash += $gameRules['betAmount'];
-            $round['winner'] = "Dealer - scored ----------";
+            $round['winner'] = "Dealer";
         } else {
             # tie - bets are returned
             $round['winner'] = "Tie";
@@ -267,15 +287,23 @@ while ($playerCash > 0 && $dealerCash > 0) {
     }
 
     # update cash balance
+    if ($round['winner'] == "Player") {
+        $totalPlayerWins++;
+    } elseif ($round['winner'] == "Dealer") {
+        $totalDealerWins++;
+    } else {
+        $totalTies++;
+    }
+    
     $round['player']['endCash'] = $playerCash;
     $round['dealer']['endCash'] = $dealerCash;
 
     # round is over - save rounds details
     $rounds[] = $round;
 
-    echo "<br>Round: " . count($rounds) . " winner: " . $round['winner'];
-    echo " Cash: " . $playerCash . " Dealer" . $dealerCash;
-    echo " Scores: " . $round['player']['cardValues'] . " " . $round['dealer']['cardValues'];
+    // echo "<br>Round: " . count($rounds) . " winner: " . $round['winner'];
+    // echo " Cash: " . $playerCash . " Dealer" . $dealerCash;
+    // echo " Scores: " . $round['player']['cardValues'] . " " . $round['dealer']['cardValues'];
 } 
 
 # end of game action
@@ -291,11 +319,15 @@ echo "<br>totalRounds: " . $totalRounds . "<br>";
 echo "<br>finalWinner: " . $finalWinner . "<br>";
 echo "<br>playerCash: " . $playerCash . "<br>";
 echo "<br>dealerCash: " . $dealerCash . "<br>";
+echo "<br>";
+echo "<br>win percent: " . $totalPlayerWins . " " . number_format(($totalPlayerWins +  $totalTies)/ $totalRounds * 100,2) . "<br>";
+echo "<br>dealer percent: " . $totalDealerWins . " " . number_format(($totalDealerWins +  $totalTies)/ $totalRounds * 100,2) . "<br>";
+echo "<br>tie percent: " . number_format($totalTies / $totalRounds * 100) . "<br>";
 
 
- echo "<pre>";
-print_r($rounds);
-echo "</pre>";
+//  echo "<pre>";
+// print_r($rounds);
+// echo "</pre>";
 
 
 require "index-view.php";
