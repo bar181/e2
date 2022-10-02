@@ -1,6 +1,8 @@
 <?php 
 # gereral blackjack rules: https://en.wikipedia.org/wiki/Blackjack
 # suits icons css: https://hesweb.dev/files/e2p1-examples/war/
+# table css: https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy
+# color theme: https://material.io/design/color/the-color-system.html#color-theme-creation
 
 # ----------- set global variables and defaults -----------
 
@@ -42,7 +44,7 @@ dealerStand: casino rules where dealer must hit on 16 or less (stand on soft 17)
 */
 $aiLogic = [
     'standardStand' => 14, 
-    'goodStand' => 11, 
+    'goodStand' => 12, 
     'goodCards' => [4,5,6], 
     'badStand' => 16, 
     'badCards' => [10,11], 
@@ -189,12 +191,11 @@ while ($playerCash > 0 && $dealerCash > 0) {
 
         $standDecision = $aiLogic['standardStand'];
         if (in_array($round['dealer']['cardValues'], $aiLogic['badCards'])) {
-            # you are in a bad position (dealer has good cards) - player stands at higher amount
-            # e.g. if dealer shows an ace, then keep hitting until you have a 17 (default) or better
+            # you are in a bad position (dealer has good cards like an Ace or Face card) - player stands at higher amount
             $standDecision = $aiLogic['badStand'];
         }
         if (in_array($round['dealer']['cardValues'], $aiLogic['goodCards'])) {
-            # you are in a good position (dealer has bad cards) - stand earlier
+            # you are in a good position (dealer has bad cards like a 4,5 or 6) - stand earlier
             $standDecision = $aiLogic['goodStand'];
         }
         if ($score >= $standDecision) {
