@@ -15,11 +15,9 @@
 
     <h2>House Rules of the Game</h2>
     <ul>
-        <li>A player wins a round if they have card values higher that a dealer without exceeding 21
-            points</li>
-        <li>Wages are returned if the dealer and player tie</li>
-        <li>Card values: numbered cards are worth their number, face cards are 10 points, aces can be either 1 or 11
-        </li>
+        <li>Wagers are returned if the dealer and player tie</li>
+        <li>Card point values: numbered cards are worth their number, face cards are 10 points, aces can be either 1 or
+            11</li>
         <li>The game ends when the player either doubles their money or goes broke</li>
         <li>The house rules are set using $10 wagers and $100 starting cash</li>
         <li>6 card decks are used and reshuffled when 50% of cards area shown (shoe size)</li>
@@ -28,14 +26,18 @@
 
     <h2>Mechanics</h2>
     <ul>
-        <li>The Player places a wager for each round and matched by the dealer</li>
-        <li>For each round a player and dealer are dealt a single card</li>
-        <li>For the player's turn, a player may receive additional cards (hit) until the point value is 21 (win
-            automatically) or exceed 21 (lose automatically) or stops (stand)</li>
-        <li>The player will hit or stand using logic; inputs are the player's point value and dealer's card</li>
-        <li>For the dealer's turn, they must hit or stand according to house rules</li>
-        <li>Highest points wins wagers, ties returns original wagers, over 21 automatically loses</li>
-        <li>The deck is shuffled at predetermined times depending on house rules (e.g. shuffle
+        <li>This is a two player blackjack simulation. One will be a "player" and the other a "dealer".</li>
+        <li>The Player places a wager for each round; this wager is matched by the dealer</li>
+        <li>For each round the player and dealer are dealt a single card each</li>
+        <li>For the player's turn, the player may receive additional cards ("hit") or stop receiving cards ("stand")
+        </li>
+        <li>The player will "hit" or "stand" using predefined logic</li>
+        <li>For the player's turn, the player's turn is over when the point value of their cards is
+            21 (win automatically), exceeds 21 (lose automatically) or the player stands</li>
+        <li>For the dealer's turn, they must hit or stand according to house rules; the round is over if the dealer's
+            points are 21 or more</li>
+        <li>The person with the highest total card value wins wagers, ties returns original wagers</li>
+        <li>The card deck is shuffled at predetermined times depending on house rules (e.g. shuffle
             when 50% of cards are shown)</li>
         <li>Rounds continue one person has all the money and determined the game winner</li>
     </ul>

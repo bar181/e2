@@ -29,7 +29,8 @@ $gameRules = [
  # final shoe size calculation (result is number of cards remaining before shuffling the deck)
  $gameRules['shoeSize'] =  intval($gameRules['reshufflePercent'] * 52 * $gameRules['numberOfDecks']);
 
-# logic for when to hit or stand - Configuarable
+# logic for when to hit or stand - Configuarable 
+# use caution if changing dealer stand rules as these are based on casino rules
 /*
     You may adjust the stand values for the player 
     Stand values for the dealer are based on casino rules
@@ -48,11 +49,9 @@ $aiLogic = [
     'dealerStand' => 17, 
 ];
 
-# set player/dealer global variables and defaults
+# running cash balances
 $playerCash = $gameRules['startingCash'] ;
 $dealerCash = $gameRules['startingCash'] ;
-$totalRounds = 0 ;
-$finalWinner = null ;
 
  # array to store round details - this will be displayed in HTML
  $rounds = [];
