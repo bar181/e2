@@ -20,7 +20,7 @@ body {
     padding: 8px;
   }
   
-  #table tr:nth-child(even){background-color: #6200EE;}
+  #table tr:nth-child(even){background-color: #03DAC6;}
   
   #table tr:hover {background-color: #018786;}
   
@@ -28,6 +28,6 @@ body {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: center;
-    background-color: #03DAC6;
+    background-color: #018786;
     color: white;
   }

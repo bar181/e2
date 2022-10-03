@@ -1,24 +1,23 @@
 <?php 
+# reference sources - final player hit/stand logic created by Brad Ross with influence based on odds calculations provided in the wikipedia summary
 # gereral blackjack rules: https://en.wikipedia.org/wiki/Blackjack
 # suits icons css: https://hesweb.dev/files/e2p1-examples/war/
 # table css: https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy
 # color theme: https://material.io/design/color/the-color-system.html#color-theme-creation
 
+
 # ----------- set global variables and defaults -----------
 
-# game play variables (constants)
 /*
-End of game when the player has lost everything or doubled their money
+Configuarable game rules:
+    Can change any of these values
 
-You may alter the game rules:
-
-startingCash: (int) how much cash both the dealer and player have at the start
-betAmount: (int) wager placed for each hand (tie returns cash)
-numberOfDecks: (int) number of decks used 
-shuffleTurn: (bool) true means the deck gets shuffled after each round 
-reshufflePercent: (decimal) when does the deck automatically get shuffled (usually at 50% of deck size)
+    startingCash: (int) how much cash both the dealer and player have at the start
+    betAmount: (int) wager placed for each hand (tie returns cash)
+    numberOfDecks: (int) number of decks used 
+    shuffleTurn: (bool) true means the deck gets shuffled after each round 
+    reshufflePercent: (decimal) when does the deck automatically get shuffled (usually at 50% of deck size)
 */
-
 $gameRules = [
     'startingCash' => 100, 
     'betAmount' => 10, 
@@ -27,32 +26,29 @@ $gameRules = [
     'reshufflePercent' => 0.5, 
  ];
 
+ # final shoe size calculation (result is number of cards remaining before shuffling the deck)
  $gameRules['shoeSize'] =  intval($gameRules['reshufflePercent'] * 52 * $gameRules['numberOfDecks']);
 
- $totalPlayerWins = 0;
- $totalDealerWins = 0;
- $totalTies = 0;
-
-
-
-# logic for when to hit or stand
+# logic for when to hit or stand - Configuarable
 /*
-standAverageCards: player stands at this value (cutoff) or more if dealer shows a 2,3,7,8,9
-standGoodCards: stand cutoff if dealer shows 4,5,6
-standBadCards: stand cutoff if dealer shows face card or ace
-dealerStand: casino rules where dealer must hit on 16 or less (stand on soft 17)
+    You may adjust the stand values for the player 
+    Stand values for the dealer are based on casino rules
+
+    standAverageCards: player stands at this value (cutoff) or more if dealer shows a 2, 3, 7, 8, 9
+    standGoodCards: stand cutoff if dealer shows 4, 5, 6
+    standBadCards: stand cutoff if dealer shows face card or ace
+    dealerStand: casino rules where dealer must hit on 16 or less (stand on soft 17)
 */
 $aiLogic = [
     'standardStand' => 14, 
     'goodStand' => 12, 
-    'goodCards' => [4,5,6], 
+    'goodCards' => [4, 5, 6], 
     'badStand' => 16, 
-    'badCards' => [10,11], 
-    'dealerStand' => 17,
+    'badCards' => [10, 11], 
+    'dealerStand' => 17, 
 ];
 
-
-// set player/dealer global variables and defaults
+# set player/dealer global variables and defaults
 $playerCash = $gameRules['startingCash'] ;
 $dealerCash = $gameRules['startingCash'] ;
 $totalRounds = 0 ;
@@ -61,84 +57,68 @@ $finalWinner = null ;
  # array to store round details - this will be displayed in HTML
  $rounds = [];
 
- # set default round deails (imutable)
+ # set default round details - some variables will be altered for each round
  $ogRound = [
     'round' => 0 , 
     'player' => [
-        'cards' => [],
-        'cardValues' => 0,
-        'aces' => 0,
-        'endCash' => 0,
+        'cards' => [], 
+        'cardValues' => 0, 
+        'aces' => 0, 
+        'endCash' => 0, 
     ], 
     'dealer' => [
-        'cards' => [],
-        'cardValues' => 0,
-        'aces' => 0,
+        'cards' => [], 
+        'cardValues' => 0, 
+        'aces' => 0, 
         'endCash' => 0
     ], 
-    'winner' => null,
+    'winner' => null, 
  ];
 
- # ----------- create deck of cards -----------
- # first digit/letter of card and values
 
- $cardNumbers = [];
- $cardValues = [];
- for ($i = 2; $i <= 10; $i++) {
-    $cardNumbers[$i] = $i;
-    $cardValues[$i] = $i;
- }
- array_push($cardNumbers,"J", "Q", "K", "A");
- array_push($cardValues, 10, 10, 10, 11);
+ # ----------- create deck of cards -----------
  
- # card's suit
- # source for suits icons: https://hesweb.dev/files/e2p1-examples/war/
+ # associative array key is first digit/letter of card and value is card's point values
+ $cardValues = array("2"=>2, "3"=>3, "4"=>4, "5"=>5, "6"=>6, 7=>7, "8"=>8, 
+ "9"=>9, "10"=>10, "J"=>10, "Q"=>10, "K"=>10, "A"=>11);
+
+ # card's suit: diamonds, hearts, clubs, spades (see css source - top of page)
  $cardSuits = ["♦", "♥", "♣", "♠"];
 
-// print_r($cardNumbers);
-// echo "<br>";
-// print_r($cardValues);
-
- # create master card deck - 13 cards * 4 suits (imutable) * number of decks
+ # create master card deck with all playing cards - 13 cards * 4 suits * number of decks 
 $ogDeck = [];
 $counter = 0;
 for ($i = 0; $i < $gameRules['numberOfDecks']; $i++) {
     foreach ($cardSuits as $keySuit => $cardSuit) {
-    foreach ($cardNumbers as $keyNumber => $cardNumber) {
-        
-            $ogDeck[$counter]['show'] = $cardNumbers[$keyNumber] . $cardSuit;
-            $ogDeck[$counter]['value'] = $cardValues[$keyNumber];
+
+        # add each card display (i.e. Ace of Hearts) and the card's point value (i.e. 11)
+        foreach ($cardValues as $card => $value) { 
+            $ogDeck[$counter]['show'] = $card . $cardSuit;
+            $ogDeck[$counter]['value'] = $value;
             $counter ++;
         }
     }
 }
 
-// var_dump($ogDeck);
-
+# default array holding actual deck of cards used for each round 
 $deck = [];
 
 
-
 # ----------- round activity-----------
-$playerCash += $gameRules['betAmount'];
-$dealerCash -= $gameRules['betAmount'];
-# game while loop ends when either player or dealer is broke
-while ($playerCash > 0 && $dealerCash > 0) {
 
-    // test for predetermined # rounds
-// for ($ii = 0; $ii <= 25; $ii++) {
+# game loop continues until either player or dealer is broke
+while ($playerCash > 0 && $dealerCash > 0) {
 
     # shuffle deck (if cards remaining < shoe or settings set to reshuffle every turn)
     if ((count($deck) < $gameRules['shoeSize']) || $gameRules['shuffleTurn']) {
         $deck = $ogDeck;
         shuffle($deck);
-        // echo "<br>Everybody's shuffling ! ";
     }
 
     # set default player and dealer round details
     $round = $ogRound;
 
-    # player's hold card
+    # player's flop card - remove card from deck array and track activity
     $card = array_pop($deck);
     $round['player']['cards'][] = $card['show'];
     $round['player']['cardValues'] = $card['value'];
@@ -146,7 +126,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
         $round['player']['aces']++;
     }
 
-    // dealer flop card
+    # dealer flop card - remove card from deck array and track activity
     $card = array_pop($deck);
     $round['dealer']['cards'][] = $card['show'];
     $round['dealer']['cardValues'] = $card['value'];
@@ -156,10 +136,10 @@ while ($playerCash > 0 && $dealerCash > 0) {
 
     # ----------- player game play -----------
 
-    # player must hit for 2nd card
+    # default toggle player must hit (boolean default)
     $isHit = true;
 
-    // while loop - until a winner is decide or player stands
+    # player continues to receive additional cards until a winner is decided or player stands
     while ($isHit && $round['winner'] == null) {
         # local variable score (for readability only)
         $score = $round['player']['cardValues'];
@@ -167,43 +147,44 @@ while ($playerCash > 0 && $dealerCash > 0) {
         # end round: player busts (over 21)
         if ($score > 21 && $round['player']['aces'] < 1) {
             $round['winner'] = "Dealer";
-            // break;
             $isHit = false;
         }
 
         # end round: player has 21 !
         if ($score == 21) {
             $round['winner'] = "Player";
-            // break;
             $isHit = false;
         }
 
         # edge case : player over 21 but has aces
         if ($score > 21 && $round['player']['aces'] > 0) {
-            # Ace is now worth 1 point
+            # Ace is now worth 1 point (Ace cannot be reused)
             $score -= 10;
             $round['player']['aces'] --;
             $round['player']['cardValues'] -= 10;
         }
 
-        # basic stand decision - stand based on dealer's cards
-        # logic designed by Brad - influenced by odds/percentages in wikipedia article
-
+        # basic stand decisions influenced by odds/percentages in wikipedia article
+        # default minimum points in hand to stand when dealer shows an average card
         $standDecision = $aiLogic['standardStand'];
+
         if (in_array($round['dealer']['cardValues'], $aiLogic['badCards'])) {
-            # you are in a bad position (dealer has good cards like an Ace or Face card) - player stands at higher amount
+            # player in a bad position (dealer has good cards like an Ace or Face card) - player stands at higher amount
             $standDecision = $aiLogic['badStand'];
         }
         if (in_array($round['dealer']['cardValues'], $aiLogic['goodCards'])) {
-            # you are in a good position (dealer has bad cards like a 4,5 or 6) - stand earlier
+            # player in a good position (dealer has bad cards like a 4, 5 or 6) - stand earlier
             $standDecision = $aiLogic['goodStand'];
         }
+
+        # identify if the player's card value is high enough to stand 
         if ($score >= $standDecision) {
             $isHit = false;
         }
 
+        # player decides to hit
         if ($isHit) {
-            # add additional player card
+            # add additional card and track results
             $card = array_pop($deck);
             $round['player']['cards'][] = $card['show'];
             $round['player']['cardValues'] += $card['value'];
@@ -220,20 +201,18 @@ while ($playerCash > 0 && $dealerCash > 0) {
     $isHit = true;
 
     while ($isHit && $round['winner'] == null) {
-        # local variable score (for readability only)
+        # local variable of card's point value (for readability)
         $score = $round['dealer']['cardValues'];
 
         # end round: dealer busts (over 21)
         if ($score > 21 && $round['dealer']['aces'] < 1) {
             $round['winner'] = "Player";
-            // break;
             $isHit = false;
         }
 
         # end round: dealer has 21 !
         if ($score == 21) {
             $round['winner'] = "Dealer";
-            // break;
             $isHit = false;
         }
 
@@ -250,8 +229,10 @@ while ($playerCash > 0 && $dealerCash > 0) {
             $isHit = false;
         }
 
+        # dealer must hit
         if ($isHit) {
-            # add additional dealer card
+
+            # add additional card
             $card = array_pop($deck);
             $round['dealer']['cards'][] = $card['show'];
             $round['dealer']['cardValues'] += $card['value'];
@@ -263,6 +244,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
 
     # ----------- end of round details -----------
 
+    # a winner was already declared
     if ($round['winner'] == "Player") {
         $playerCash += $gameRules['betAmount'];
         $dealerCash -= $gameRules['betAmount'];
@@ -270,44 +252,39 @@ while ($playerCash > 0 && $dealerCash > 0) {
         $playerCash -= $gameRules['betAmount'];
         $dealerCash += $gameRules['betAmount'];
     } else {
-        # no declared winner during round - now evaluate scores
+
+        # no declared winner during round - evaluate scores
         if ($round['player']['cardValues'] >  $round['dealer']['cardValues']) {
-            # player has higher score - player wins bet
+  
+            # player has higher score - player wins (adjust cash based on wager)
             $playerCash += $gameRules['betAmount'];
             $dealerCash -= $gameRules['betAmount'];
             $round['winner'] = "Player";
         } elseif ($round['player']['cardValues'] <  $round['dealer']['cardValues']) {
-            # dealer has higher score - dealer wins bet
+
+            # dealer has higher score - dealer wins
             $playerCash -= $gameRules['betAmount'];
             $dealerCash += $gameRules['betAmount'];
             $round['winner'] = "Dealer";
         } else {
+ 
             # tie - bets are returned
             $round['winner'] = "Tie";
         }
     }
 
-    # update cash balance
-    if ($round['winner'] == "Player") {
-        $totalPlayerWins++;
-    } elseif ($round['winner'] == "Dealer") {
-        $totalDealerWins++;
-    } else {
-        $totalTies++;
-    }
-    
+    # track updated update cash balance
     $round['player']['endCash'] = $playerCash;
     $round['dealer']['endCash'] = $dealerCash;
 
-    # round is over - save rounds details
+    # round is over - save round details
     $rounds[] = $round;
 
-    // echo "<br>Round: " . count($rounds) . " winner: " . $round['winner'];
-    // echo " Cash: " . $playerCash . " Dealer" . $dealerCash;
-    // echo " Scores: " . $round['player']['cardValues'] . " " . $round['dealer']['cardValues'];
-} 
+  } 
 
-# end of game action
+# ----------- end of game action -----------
+
+# identify total rounds and the winner
 $totalRounds = count($rounds);
 if($playerCash < 1) {
     $finalWinner = "Dealer" ; 
@@ -316,19 +293,5 @@ if($playerCash < 1) {
 }
 
 
-echo "<br>totalRounds: " . $totalRounds . "<br>";
-echo "<br>finalWinner: " . $finalWinner . "<br>";
-echo "<br>playerCash: " . $playerCash . "<br>";
-echo "<br>dealerCash: " . $dealerCash . "<br>";
-echo "<br>";
-echo "<br>win percent: " . $totalPlayerWins . " " . number_format(($totalPlayerWins +  $totalTies)/ $totalRounds * 100,2) . "<br>";
-echo "<br>dealer percent: " . $totalDealerWins . " " . number_format(($totalDealerWins +  $totalTies)/ $totalRounds * 100,2) . "<br>";
-echo "<br>tie percent: " . number_format($totalTies / $totalRounds * 100) . "<br>";
-
-
-//  echo "<pre>";
-// print_r($rounds);
-// echo "</pre>";
-
-
+# ----------- display game on website -----------
 require "index-view.php";

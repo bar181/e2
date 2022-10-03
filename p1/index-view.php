@@ -15,7 +15,7 @@
 
     <h2>House Rules of the Game</h2>
     <ul>
-        <li>A player wins a round and the wagers if they have card values higher that a dealer without exceeding 21
+        <li>A player wins a round if they have card values higher that a dealer without exceeding 21
             points</li>
         <li>Wages are returned if the dealer and player tie</li>
         <li>Card values: numbered cards are worth their number, face cards are 10 points, aces can be either 1 or 11
@@ -32,15 +32,13 @@
         <li>For each round a player and dealer are dealt a single card</li>
         <li>For the player's turn, a player may receive additional cards (hit) until the point value is 21 (win
             automatically) or exceed 21 (lose automatically) or stops (stand)</li>
-        <li>The player will hit or stand using logic by knowking their score and strength of the dealer's hand (i.e.
-            player will stand earlier if the dealer shows a bad card)</li>
+        <li>The player will hit or stand using logic; inputs are the player's point value and dealer's card</li>
         <li>For the dealer's turn, they must hit or stand according to house rules</li>
-        <li>Highest card values wins wagers, ties returns original wagers, over 21 automatically loses</li>
-        <li>Rounds continue one person has all the money</li>
-        <li>The deck is shuffled at predetermined times depending on house rules that can be configured (e.g. shuffle
+        <li>Highest points wins wagers, ties returns original wagers, over 21 automatically loses</li>
+        <li>The deck is shuffled at predetermined times depending on house rules (e.g. shuffle
             when 50% of cards are shown)</li>
+        <li>Rounds continue one person has all the money and determined the game winner</li>
     </ul>
-
 
     <h2>Results</h2>
     <ul>
@@ -50,7 +48,6 @@
 
     <h2>Rounds</h2>
     <table id="table">
-
         <tr>
             <th>Round</th>
             <th>Player Cards</th>
@@ -61,29 +58,30 @@
             <th>Player Cash</th>
             <th>Dealer Cash</th>
         </tr>
+
         <?php foreach ($rounds as $key =>$round) { ?>
         <tr>
-            <td><?php echo $key + 1 ?></td>
+            <td><?php echo $key + 1; ?>
+            </td>
             <td>
                 <?php foreach ($round['player']['cards'] as $card) { ?>
                 <span class='card'><?php echo $card; ?></span>
                 <?php } ?>
             </td>
-            <td><?php echo $round['player']['cardValues'] ?></td>
+            <td><?php echo $round['player']['cardValues']; ?></td>
             <td>
                 <?php foreach ($round['dealer']['cards'] as $card) { ?>
                 <span class='card'><?php echo $card; ?></span>
                 <?php } ?>
             </td>
-            <td><?php echo $round['dealer']['cardValues'] ?></td>
-            <td><strong><?php echo $round['winner'] ?></strong></td>
-            <td>$<?php echo $round['player']['endCash'] ?></td>
-            <td>$<?php echo $round['dealer']['endCash'] ?></td>
+            <td><?php echo $round['dealer']['cardValues']; ?></td>
+            <td><strong><?php echo $round['winner']; ?></strong></td>
+            <td>$<?php echo $round['player']['endCash']; ?></td>
+            <td>$<?php echo $round['dealer']['endCash']; ?></td>
         </tr>
         <?php } ?>
+
     </table>
-
-
 </body>
 
 </html>
