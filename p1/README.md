@@ -39,7 +39,7 @@ Count the number of points in the dealer's hand
 + If the dealer hits, they receive a new card from the deck and their urn continues
 + track dealer's activity 
 
-### Determine Winner
+### Winner of the Round
 + If the round winner was not already decided during the player or dealer's turn, the highest total card values wins
 + If the player and dealer have the same point value, the round is a tie
 
@@ -57,21 +57,30 @@ Count the number of points in the dealer's hand
 + Show the number of rounds played and the overall winner
 + Table with details showing tracked activity for each round (show all cards for both player and dealer for each round) 
 
+## Specifications Review
++ This is a two player game where one player is called "Player" and the other is "Dealer"
++ Random choices used when shuffling deck
++ Pre-programmed strategies included for player hit/stand options (configurable)
++ No user inputs required
++ Game follows standard "Blackjack" casino rules 
++ Game resides on public site using its own document root. Repository is public on GitHub
+
 ## Outside resources
-[Generic blackjack rules for game play, logic and rules](https://en.wikipedia.org/wiki/Blackjack)
-[Suits icons css](https://hesweb.dev/files/e2p1-examples/war/)
-[Table css](https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy)
-[Color theme for table colors](https://material.io/design/color/the-color-system.html#color-theme-creation)
-[refresher on associative arrays](https://www.w3schools.com/php/php_arrays_associative.asp)
++ [Generic blackjack rules for game play, logic and rules](https://en.wikipedia.org/wiki/Blackjack)
++ [Suits icons css from course example](https://hesweb.dev/files/e2p1-examples/war/)
++ [Table css](https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy)
++ [Color theme for table colors](https://material.io/design/color/the-color-system.html#color-theme-creation)
++ [refresher on associative arrays](https://www.w3schools.com/php/php_arrays_associative.asp)
 
 
 ## Notes for instructor
-Have fun !
+None. Have fun ! 
 
 
-# commit logs
-[Sep 24/22: Blackjack game logic - initial](https://github.com/bar181/e2/commit/30a5c5257c9fae788113446f540426e86a95e3f3)
-[Sep 30/22: e2p1 run tests](https://github.com/bar181/e2/commit/c9a302e4c3f649d085b1c4a9844ae932d8908e68)
-[Oct 2/22: add round output with css](https://github.com/bar181/e2/commit/4e4cde8f049a334bfba99ddc312b6d6075b6dfae)
-[Oct 3/22: refactoring and readme](https://github.com/bar181/e2/commit/f2cda83316f4ea26735ef93c05370fe4f710efd6)
-[Oct 3/22: e2p1 ready for final review]()
+## Commit logs
++ [Sep 24/22: Blackjack game logic - initial](https://github.com/bar181/e2/commit/30a5c5257c9fae788113446f540426e86a95e3f3)
++ [Sep 30/22: e2p1 run tests](https://github.com/bar181/e2/commit/c9a302e4c3f649d085b1c4a9844ae932d8908e68)
++ [Oct 2/22: add round output with css](https://github.com/bar181/e2/commit/4e4cde8f049a334bfba99ddc312b6d6075b6dfae)
++ [Oct 3/22: refactoring and readme](https://github.com/bar181/e2/commit/f2cda83316f4ea26735ef93c05370fe4f710efd6)
++ [Oct 3/22: e2p1 ready for final review](https://github.com/bar181/e2/commit/8fb83a454441da62daf3165db55a5dfa7a827526)
++ Final commit made on Oct 4/22 for submission

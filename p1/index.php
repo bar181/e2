@@ -30,15 +30,16 @@ $gameRules = [
  $gameRules['shoeSize'] =  intval($gameRules['reshufflePercent'] * 52 * $gameRules['numberOfDecks']);
 
 # logic for when to hit or stand - Configuarable 
-# use caution if changing dealer stand rules as these are based on casino rules
 /*
-    You may adjust the stand values for the player 
-    Stand values for the dealer are based on casino rules
+    You may adjust the stand values for the player
+    Stand values for the dealer are based on casino rules *use caution if changing dealer stand value
 
-    standAverageCards: player stands at this value (cutoff) or more if dealer shows a 2, 3, 7, 8, 9
-    standGoodCards: stand cutoff if dealer shows 4, 5, 6
-    standBadCards: stand cutoff if dealer shows face card or ace
-    dealerStand: casino rules where dealer must hit on 16 or less (stand on soft 17)
+    standardStand: (int) player stands at this value (cutoff) or more if dealer shows an average card (2, 3, 7, 8, 9)
+    goodStand: (int) stand cutoff if dealer shows cards that are good for the player
+    goodCards: (array of int) array of good cards for the player (i.e. dealer shows 4,5,6)
+    badStand: (int) stand cutoff if dealer shows face card or ace
+    badCards: (array of int) array of bad cards for the player (i.e. dealer shows a 10 or 11 point card)
+    dealerStand: (int) casino rules where dealer must hit on 16 or less (stand on soft 17)
 */
 $aiLogic = [
     'standardStand' => 14, 
@@ -53,7 +54,7 @@ $aiLogic = [
 $playerCash = $gameRules['startingCash'] ;
 $dealerCash = $gameRules['startingCash'] ;
 
- # array to store round details - this will be displayed in HTML
+ # array of round details - this will be displayed in HTML
  $rounds = [];
 
  # set default round details - some variables will be altered for each round
@@ -90,7 +91,7 @@ $counter = 0;
 for ($i = 0; $i < $gameRules['numberOfDecks']; $i++) {
     foreach ($cardSuits as $keySuit => $cardSuit) {
 
-        # add each card display (i.e. Ace of Hearts) and the card's point value (i.e. 11)
+        # add each card display (i.e. A♥ for Ace of Hearts) and the card's point value (i.e. 11)
         foreach ($cardValues as $card => $value) { 
             $ogDeck[$counter]['show'] = $card . $cardSuit;
             $ogDeck[$counter]['value'] = $value;
@@ -99,25 +100,25 @@ for ($i = 0; $i < $gameRules['numberOfDecks']; $i++) {
     }
 }
 
-# default array holding actual deck of cards used for each round 
+# default array holding actual deck of cards used to distribute cards - refresh by copying from original/master deck
 $deck = [];
 
 
 # ----------- round activity-----------
 
-# game loop continues until either player or dealer is broke
+# game loop continues until either the player or the dealer is out of cash
 while ($playerCash > 0 && $dealerCash > 0) {
 
-    # shuffle deck (if cards remaining < shoe or settings set to reshuffle every turn)
+    # shuffle a new deck (if cards remaining is less than shoe OR the game options are set to reshuffle every turn)
     if ((count($deck) < $gameRules['shoeSize']) || $gameRules['shuffleTurn']) {
         $deck = $ogDeck;
         shuffle($deck);
     }
 
-    # set default player and dealer round details
+    # set default round details
     $round = $ogRound;
 
-    # player's flop card - remove card from deck array and track activity
+    # player's flop card - remove card from deck array and track activity, made points adjustments for Aces
     $card = array_pop($deck);
     $round['player']['cards'][] = $card['show'];
     $round['player']['cardValues'] = $card['value'];
@@ -157,6 +158,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
 
         # edge case : player over 21 but has aces
         if ($score > 21 && $round['player']['aces'] > 0) {
+            
             # Ace is now worth 1 point (Ace cannot be reused)
             $score -= 10;
             $round['player']['aces'] --;
@@ -196,9 +198,10 @@ while ($playerCash > 0 && $dealerCash > 0) {
 
     # ----------- dealer game play -----------
 
-    # dealer hits until a winner selected or must stand
+    # dealer hits default is true - this will be changed for specific cases
     $isHit = true;
 
+    # Dealer's turn action 
     while ($isHit && $round['winner'] == null) {
         # local variable of card's point value (for readability)
         $score = $round['dealer']['cardValues'];
@@ -217,6 +220,7 @@ while ($playerCash > 0 && $dealerCash > 0) {
 
         # edge case : dealer over 21 but has aces
         if ($score > 21 && $round['dealer']['aces'] > 0) {
+            
             # Ace is now worth 1 point
             $score -= 10;
             $round['dealer']['aces'] --;

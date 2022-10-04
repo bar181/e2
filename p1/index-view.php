@@ -19,14 +19,16 @@
         <li>Card point values: numbered cards are worth their number, face cards are 10 points, aces can be either 1 or
             11</li>
         <li>The game ends when the player either doubles their money or goes broke</li>
-        <li>The house rules are set using $10 wagers and $100 starting cash</li>
-        <li>6 card decks are used and reshuffled when 50% of cards area shown (shoe size)</li>
+        <li>$10 wagers each round and $100 starting cash</li>
+        <li>No card splits. 21 pays standard return. Round winner declared on 21 points.</li>
+        <li>6 card decks are used and reshuffled when 50% of cards are played (shoe size)</li>
         <li>Dealer hits on 16 including a soft 16 (ace and five) and stands at 17 or more</li>
     </ul>
 
     <h2>Mechanics</h2>
     <ul>
-        <li>This is a two player blackjack simulation. One will be a "player" and the other a "dealer".</li>
+        <li>This is a two player blackjack simulation. One will be a "player" and the other a "dealer" for the entire
+            game</li>
         <li>The Player places a wager for each round; this wager is matched by the dealer</li>
         <li>For each round the player and dealer are dealt a single card each</li>
         <li>For the player's turn, the player may receive additional cards ("hit") or stop receiving cards ("stand")
@@ -39,7 +41,7 @@
         <li>The person with the highest total card value wins wagers, ties returns original wagers</li>
         <li>The card deck is shuffled at predetermined times depending on house rules (e.g. shuffle
             when 50% of cards are shown)</li>
-        <li>Rounds continue one person has all the money and determined the game winner</li>
+        <li>Rounds continue until one person has all the money and determined the game winner</li>
     </ul>
 
     <h2>Results</h2>
