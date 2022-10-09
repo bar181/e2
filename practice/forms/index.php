@@ -2,11 +2,17 @@
 
 session_start();
 
+$newWord = true;
 if(!is_null($_SESSION['results'])) {
     $results = $_SESSION['results'];
     $haveAnswer = $results['haveAnswer'];
     $correct = $results['correct'];
     $_SESSION['results'] = null;
+
+    var_dump($correct);
+    if(!$correct) {
+        $newWord = false;
+    }
 }
 
 
@@ -21,6 +27,7 @@ $words = [
      'stint' => 'a period of time spent at a particular activity', 
     ]; 
 
+if ($newWord) {
     // https://www.php.net/manual/en/function.shuffle.php
     $keys = array_keys($words);
     shuffle($keys);
@@ -35,10 +42,11 @@ $words = [
         'phrase' => $phrase,
         'scrambleWord' => $scrambleWord,
     ];
+}
 
-    // echo "<br>";
-    // var_dump($_SESSION);
-    // echo "<br>";
+// echo "<br>";
+// var_dump($_SESSION);
+// echo "<br>";
 
 
 require 'index-view.php';
