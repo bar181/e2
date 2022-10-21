@@ -73,6 +73,8 @@ Count the number of points in the dealer's hand
 + [refresher on associative arrays](https://www.w3schools.com/php/php_arrays_associative.asp)
 
 
+https://commons.wikimedia.org/wiki/File:13-02-27-spielbank-wiesbaden-by-RalfR-051.jpg
+
 ## Notes for instructor
 None. Have fun ! 
 
