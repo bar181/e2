@@ -18,12 +18,22 @@ if (isset($_POST['setup'])) {
 
     $multiPlayer = (isset($_POST['multiPlayer'])) ? true : false;
 
+    # basic validation
+    $cash = intval($_POST['cash']);
+    if ($cash < 10 || $cash > 1000) {
+        $cash = 100;
+    }
+    $playerName = $_POST['playerName'];
+    if (strlen($playerName) < 1) {
+        $playerName = "Player";
+    }
+
     $_SESSION['setup'] = [
-           'playerName' => $_POST['playerName'],
-           'cash' => intval($_POST['cash']),
+           'playerName' => $playerName,
+           'cash' => $cash,
            'wager' => 0,
            'multiPlayer' => $multiPlayer,
-           'round' => 1,
+           'round' => 0,
        ];
 
     $_SESSION['page'] = 'newRound';
@@ -54,18 +64,5 @@ if (isset($_POST['endRound'])) {
 
     $_SESSION['page'] = 'newRound';
 }
-
-
-
-
-echo "<br>_GET: ";
-var_dump($_GET);
-echo "<br>_POST: <br>";
-var_dump($_POST);
-echo "<br>_SESSION: <br>";
-var_dump($_SESSION);
-
-
-
 
 header('Location: index.php');

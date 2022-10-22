@@ -28,38 +28,37 @@ function createDeck()
     return $ogDeck;
 }
 
-
-# blank round array
+# create a blank round array
 function blankRound()
 {
     $ogRound = [
-       'player' => [
-           'cards' => [],
-           'cardValues' => 0,
-           'aces' => 0,
-           'winlose' => "",
-           'wager' => 0,
-       ],
-       'dealer' => [
-           'cards' => [],
-           'cardValues' => 0,
-           'aces' => 0,
-           'winlose' => "",
-           'standValue' => 17,
-       ],
-       'ai' => [
-           'cards' => [],
-           'cardValues' => 0,
-           'aces' => 0,
-           'winlose' => "",
-           'wager' => 0,
-       ],
-'winner' => false,
-       'hitstand' => null,
+        'player' => [
+            'cards' => [],
+            'cardValues' => 0,
+            'aces' => 0,
+            'winlose' => "",
+            'wager' => 0,
+        ],
+        'dealer' => [
+            'cards' => [],
+            'cardValues' => 0,
+            'aces' => 0,
+            'winlose' => "",
+            'standValue' => 17,
+        ],
+        'ai' => [
+            'cards' => [],
+            'cardValues' => 0,
+            'aces' => 0,
+            'winlose' => "",
+            'wager' => 0,
+        ],
+        'winner' => false,
+        'hitstand' => null,
     ];
+
     return $ogRound ;
 }
-
 
 
 # SESSION INFLUENCES
@@ -71,7 +70,7 @@ $setup = [
     'cash' => 0,
     'multiPlayer' => false,
     'wager' => 0,
-    'round' => 1,
+    'round' => 0,
  ];
 
 if (isset($_SESSION['setup'])) {
@@ -98,39 +97,33 @@ if (isset($_SESSION['deckKeys'])) {
     $deckKeys =  $_SESSION['deckKeys'];
 }
 
-
-
-
 # ------------- NEW ROUND ------------
-
-
-echo "<br><br>setup: ";
-var_dump($setup);
-
 
 # new round when wager made (bool)
 $newDeal = ($setup['wager'] > 0) ? true : false;
 
-
-
-
-
 # get original - unshuffled deck of cards
 $ogDeck = createDeck();
 
+# defaults
+$endRound = false;
+
+
 # shuffled deck of cards for every new round  (only need deck keys)
 if ($newDeal && $page == "play") {
+    echo "<br> <br> <br> <br> - # shuffled deck of cards for every ----<br> <br> <br> -------";
+    $setup['round'] ++;
+
+
     # round set up
     $deckKeys = array_keys($ogDeck);
     shuffle($deckKeys);
     $round = blankRound();
 
-
     # adjust cash balances for new round
     $setup['cash'] -= $setup['wager'];
     $round['player']['wager'] = $setup['wager'];
     $setup['wager'] = 0;
-
 
     # player's flop card - remove card from deck array and track activity
     $cardkey = array_pop($deckKeys);
@@ -142,7 +135,6 @@ if ($newDeal && $page == "play") {
     }
 
     # dealer flop card
-
     $cardkey = array_pop($deckKeys);
     $card = $ogDeck[$cardkey];
 
@@ -163,28 +155,21 @@ if ($newDeal && $page == "play") {
             $round['ai']['aces']++;
         }
     }
-
-
-    echo "<br><br>newDeal round: ---------------- ";
-    var_dump($round);
 }
 
 # player hits
-$endRound = false;
-if (!$newDeal && $page =="play" && $round['hitstand'] == "hit") {
-    echo "<br> -------------- hit -------------- <br>";
 
+if (!$newDeal && $page =="play" && $round['hitstand'] == "hit") {
     # new player card
     $cardkey = array_pop($deckKeys);
     $card = $ogDeck[$cardkey];
     $round['player']['cards'][] = $card;
-
     if ($card['value'] == 11) {
         $round['player']['aces']++;
     }
+    $score = $round['player']['cardValues'] + $card['value'];
 
     # check if player wins or loses automatically
-    $score = $round['player']['cardValues'] + $card['value'];
 
     # edge case : player over 21 but has aces
     if ($score > 21 && $round['player']['aces'] > 0) {
@@ -211,8 +196,50 @@ if (!$newDeal && $page =="play" && $round['hitstand'] == "hit") {
 # player stand
 if (!$newDeal && $page =="play" && $round['hitstand'] == "stand") {
     $endRound = true;
-    echo "<br> -------------- stand -------------- <br>";
 }
+
+
+
+# end of round - AI plays
+if ($endRound && $setup['multiPlayer']) {
+    # default toggle player must hit (boolean default)
+    $isHit = 1;
+
+    # player continues to receive additional cards until a winner is decided or player stands
+    while ($isHit < 8) {
+        # local variable score (for readability only)
+        $dealerValue = $round['dealer']['cardValues'];
+
+        # local variable of card's point value (for readability)
+        $score = $round['ai']['cardValues'];
+
+        # edge case : dealer over 21 but has aces
+        if ($score > 21 && $round['ai']['aces'] > 0) {
+            # Ace is now worth 1 point
+            $score -= 10;
+            $round['ai']['aces'] --;
+            $round['ai']['cardValues'] -= 10;
+        }
+
+        # stand or hit decision
+        if ($score >= 15) {
+            $isHit += 10;
+        }
+
+        if ($isHit < 8) {
+            $cardkey = array_pop($deckKeys);
+            $card = $ogDeck[$cardkey];
+            $round['ai']['cards'][] = $card;
+            $round['ai']['cardValues'] = $round['ai']['cardValues'] + $card['value'];
+            if ($card['value'] == 11) {
+                $round['ai']['aces']++;
+            }
+        }
+
+        $isHit ++;
+    }
+}
+
 
 
 # end of round - Dealer must play
@@ -222,8 +249,8 @@ if ($endRound && strlen($round['player']['winlose']) < 1) {
     # dealer hits default is true - this will be changed for specific cases
     $isHit = 1;
 
-    # Dealer's turn action - use rule max 5 cards
-    while ($isHit <5) {
+    # Dealer's turn action - use rule max 7 cards
+    while ($isHit < 8) {
         echo "<br> dealer " . $round['dealer']['cardValues'] . " dealer winlose:" . $round['dealer']['winlose'] .
                  ": player winlose :" . $round['player']['winlose'];
 
@@ -238,28 +265,13 @@ if ($endRound && strlen($round['player']['winlose']) < 1) {
             $round['dealer']['cardValues'] -= 10;
         }
 
-        # end round: dealer busts (over 21)
-        if ($score > 21 && $round['dealer']['aces'] < 1) {
-            $isHit += 5;
-            $round['dealer']['winlose'] = "Bust";
-            $round['player']['winlose'] = "Win";
-        }
-
-        # end round: dealer has 21 !
-        if ($score == 21) {
-            $isHit += 5;
-            $round['dealer']['winlose'] = "Win";
-            $round['player']['winlose'] = "Lose";
-        }
-
-        # basic stand decision ()
+        # basic stand decision (end dealer turn if 17+ points include bust)
         if ($score >= $round['dealer']['standValue']) {
-            $isHit += 5;
+            $isHit += 10;
         }
 
         # dealer must hit
-        if ($isHit <5) {
-            # add additional card
+        if ($isHit < 8) {
             $cardkey = array_pop($deckKeys);
             $card = $ogDeck[$cardkey];
             $round['dealer']['cards'][] = $card;
@@ -269,28 +281,47 @@ if ($endRound && strlen($round['player']['winlose']) < 1) {
             }
         }
 
-        echo "<br> dealer " . $round['dealer']['cardValues'] . " dealer winlose:" . $round['dealer']['winlose'] .
-         ": player winlose :" . $round['player']['winlose'];
         $isHit ++;
     }
 }
 
 # end of round - Find winner
+function winRound($dealer, $player)
+{
+    $playerResult = "Tie";
+    if ($dealer > $player || $dealer <= 21) {
+        $playerResult = "Lose";
+    }
+
+    if ($dealer < $player || $dealer > 21) {
+        $playerResult = "Win";
+    }
+    return $playerResult;
+}
+
+
+# end of round - Find if player wins
 if ($endRound && strlen($round['player']['winlose']) < 1) {
-    if ($round['player']['cardValues'] == $round['dealer']['cardValues']) {
-        $round['player']['winlose'] = "Tie";
-    }
-    if ($round['player']['cardValues'] > $round['dealer']['cardValues']) {
-        $round['player']['winlose'] = "Win";
-    }
-    if ($round['player']['cardValues'] < $round['dealer']['cardValues']) {
-        $round['player']['winlose'] = "Lose";
+    $dealer = $round['dealer']['cardValues'];
+    $player = $round['player']['cardValues'];
+    $round['player']['winlose'] = winRound($dealer, $player);
+}
+
+
+# end of round - Find if ai wins
+if ($endRound) {
+    $dealer = $round['dealer']['cardValues'];
+    $player = $round['ai']['cardValues'];
+    $round['ai']['winlose'] = winRound($dealer, $player);
+    if ($round['ai']['cardValues'] > 21) {
+        $round['ai']['winlose'] = "Bust";
     }
 }
 
 
-# end of round - Close the round
-if ($endRound && strlen($round['player']['winlose']) > 1) {
+
+# end of round - Close the round and pay the winner
+if ($endRound) {
     if ($round['player']['winlose'] == "Tie") {
         $setup['cash'] += $round['player']['wager'];
     }

@@ -8,8 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-
-
 </head>
 
 <body>
@@ -30,6 +28,22 @@
             </div>
         </nav>
 
+        <div id="instructions">
+            <div class="p-2 bg-white card mb-4">
+                <h4>Round <?php echo $setup['round'] ;?></h4>
+                <ul>
+                    <li><strong>Set up:</strong> Enter your name and starting cash balance ($10-$1000)</li>
+                    <li><strong>New Round:</strong> Select an amount to wage</li>
+                    <li><strong>Blackjack:</strong> If your points are higher than the dealer without going over 21,
+                        you win!</li>
+                    <li><strong>House Rules:</strong> Dealer stands on 17. Ties reimbursed. Deck shuffled each round.
+                        Hit or Stand defaults to recommendation.
+                    </li>
+                    <li><strong>Love the Painting:</strong> I painted it !</li>
+                </ul>
+            </div>
+        </div>
+
         <div id="startingDiv" class="<?php echo ($page == 'starting') ? 'show' : 'hide' ?>">
             <form method="POST" action="process.php">
 
@@ -44,7 +58,6 @@
                     </div>
 
                     <div class="col-6 card m-2 p-3">
-
                         <div class="my-4">
                             <label for="playerName" class="form-label">Your name</label>
                             <input type="text" class="form-control" name="playerName" id="playerName"
@@ -72,59 +85,65 @@
         </div>
 
         <div id="newRoundDiv" class="<?php echo ($page == 'newRound') ? 'show' : 'hide' ?>">
+            <div class="d-flex">
+                <div class="col-6 card m-1">
+                    <img src="poker_table.jpg" class="card-img-top" alt="A painting by Brad ">
+                    <div class="my-4 text-center">
+                        <h2>Let"s Deal !</h2>
+                    </div>
+                </div>
 
-            <form method="POST" action="process.php">
+                <div class="col card m-1 p-2 text-center">
 
-                <div class="d-flex">
+                    <div class="<?php echo ($setup["cash"] < 10) ? "hide" : "show"; ?>">
+                        <form method="POST" action="process.php">
 
+                            <div class="my-5">
+                                <h2>Cash remaining</h2>
+                                <h2>$<?php echo $setup["cash"]; ?> </h2>
+                            </div>
 
-                    <div class="col-6 card m-1">
+                            <div class="">
+                                <h2>Wager this Round</h2>
+                            </div>
 
-                        <img src="poker_table.jpg" class="card-img-top" alt="A painting by Brad ">
-                        <div class="my-4 text-center">
-                            <h2>Let"s Deal !</h2>
-                        </div>
+                            <div class="my-2 d-flex justify-content-center">
+                                <div class="form-check px-3">
+                                    <input class="form-check-input" type="radio" name="wager" id="w10" value="w10"
+                                        checked>
+                                    <label class="form-check-label" for="w10">
+                                        $10
+                                    </label>
+                                </div>
+                                <div class="form-check px-3 ">
+                                    <input class="form-check-input" type="radio" name="wager" id="w50" value="w50"
+                                        <?php echo ($setup["cash"] >=50) ? "" : "disabled"; ?>>
+                                    <label class="form-check-label" for="w50">
+                                        $50
+                                    </label>
+                                </div>
+                            </div>
 
+                            <div class="d-flex justify-content-center">
+                                <input type="hidden" name="newRound" id="newRound">
+                                <button type="submit" class="btn btn-primary mb-3">Deal</button>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="col card m-1 p-2 text-center">
-
-                        <div class="my-5">
-                            <h2>Cash remaining</h2>
-                            <h2>$<?php echo $setup["cash"]; ?> </h2>
-                        </div>
-
-                        <div class="">
-                            <h2>Wager this Round</h2>
-                        </div>
-
-                        <div class="my-2 d-flex justify-content-center">
-
-                            <div class="form-check px-3">
-                                <input class="form-check-input" type="radio" name="wager" id="w10" value="w10" checked>
-                                <label class="form-check-label" for="w10">
-                                    $10
-                                </label>
-                            </div>
-                            <div class="form-check px-3 ">
-                                <input class="form-check-input" type="radio" name="wager" id="w50" value="w50"
-                                    <?php echo ($setup["cash"] >=50) ? "" : "disabled"; ?>>
-                                <label class="form-check-label" for="w50">
-                                    $50
-                                </label>
-                            </div>
-                        </div>
-
-
-                        <div class="d-flex justify-content-center">
-                            <input type="hidden" name="newRound" id="newRound">
-                            <button type="submit" class="btn btn-primary mb-3">Deal</button>
-                        </div>
+                    <div class="<?php echo ($setup["cash"] < 10) ? "show" : "hide"; ?>">
+                        <h1 class="py-5"> Out of Money :(</h1>
+                        <form method="GET" action="process.php">
+                            <input type="hidden" name="quit" id="quit">
+                            <button type="submit" class="btn btn-danger">Quit ;(</button>
+                        </form>
                     </div>
 
                 </div>
-            </form>
+
+            </div>
         </div>
+
 
 
         <div id="playDiv" class="<?php echo ($page == 'play') ? 'show' : 'hide' ?>">
@@ -157,13 +176,6 @@
                         <?php } ?>
                     </div>
                     <hr>
-                    <?php var_dump($round['winner']) ; ?>
-                    <?php echo ($round['winner']) ? 'hide' : 'show'; ?>
-                    <?php echo ($round['winner']) ? 'show' : 'hide'; ?>
-
-
-
-
                     <div class="my-4 card bggreen <?php echo ($round['winner']) ? 'hide' : 'show' ?>">
                         <form method="POST" action="process.php">
                             <div class="my-4 d-flex justify-content-around fs-3">
@@ -182,9 +194,7 @@
                                         Hit
                                     </label>
                                 </div>
-
                             </div>
-
                             <div class="d-flex justify-content-center">
                                 <input type="hidden" name="play" id="play">
                                 <button type="submit" class="btn btn-primary mb-3 fs-1">Play !</button>
@@ -196,7 +206,6 @@
                         <div class="my-4 d-flex justify-content-around fs-3">
                             <h1><?php echo $round["player"]["winlose"] ;?></h1>
                         </div>
-
                         <div class="d-flex justify-content-center">
                             <form method="POST" action="process.php">
                                 <input type="hidden" name="endRound" id="endRound">
@@ -204,6 +213,7 @@
                             </form>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="col card m-1 p-2 <?php echo ($setup["multiPlayer"]) ? "show" : "hide"; ?>">
@@ -217,13 +227,21 @@
                         <span class="showcard fs-4 <?php echo $card['style']; ?>"><?php echo $card["show"]; ?></span>
                         <?php } ?>
                     </div>
+
+
+                    <div class="text-center <?php echo ($round['winner']) ? 'show' : 'hide' ?>">
+                        <hr>
+                        <h1 class="pt-4"><?php echo $round["ai"]["winlose"] ;?></h1>
+                    </div>
+
                 </div>
+
+
 
             </div>
 
         </div>
-
-
+    </div>
     </div>
 </body>
 
