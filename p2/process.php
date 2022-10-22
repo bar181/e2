@@ -1,6 +1,5 @@
 <?php
 
-
 session_start();
 
 # user pressed quit - clear all sessions and refresh page
@@ -13,8 +12,9 @@ if (isset($_GET['quit'])) {
 
 # set up page - clear old sessions and get set up variables
 if (isset($_POST['setup'])) {
-    # reset all sessions
-    $_SESSION= null;
+    # reset  sessions
+    $_SESSION['round'] = null;
+    $_SESSION['deckKeys'] = null;
 
     $multiPlayer = (isset($_POST['multiPlayer'])) ? true : false;
 
@@ -32,20 +32,29 @@ if (isset($_POST['setup'])) {
 
 # newRound page - show round details, user picks wager for next round
 if (isset($_POST['newRound'])) {
-    # reset all sessions
     $wager = ($_POST['wager'] == 'w50') ? 50 : 10;
 
     $_SESSION['setup']['wager'] = $wager;
-
     $_SESSION['page'] = 'play';
 }
 
 # play page - use
 if (isset($_POST['play'])) {
-    # reset all sessions
+    $hitstand = $_POST['hitstand'];
+    $_SESSION['round']['hitstand'] = $hitstand;
 
     $_SESSION['page'] = 'play';
 }
+
+
+# endRound page - loads the new round pages
+if (isset($_POST['endRound'])) {
+    $_SESSION['round'] = null;
+    $_SESSION['deckKeys'] = null;
+
+    $_SESSION['page'] = 'newRound';
+}
+
 
 
 
