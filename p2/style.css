@@ -22,6 +22,10 @@ body {
     font-weight: bold;
 }
 
+.emoji-card {
+    font-size: 80px;
+}
+
 .red {
     color: red;
 }

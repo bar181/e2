@@ -8,6 +8,8 @@ if (isset($_GET['quit'])) {
     $_SESSION['page'] = null;
     $_SESSION['round'] = null;
     $_SESSION['deckKeys'] = null;
+    # for rounds only stats
+    $_SESSION['stats'] = null;
 }
 
 # set up page - clear old sessions and get set up variables

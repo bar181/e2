@@ -10,7 +10,9 @@ function createDeck()
 {
     $cardValues = array("2"=>2, "3"=>3, "4"=>4, "5"=>5, "6"=>6, 7=>7, "8"=>8,
     "9"=>9, "10"=>10, "J"=>10, "Q"=>10, "K"=>10, "A"=>11);
-    $cardSuits = ["diamond"=>"♦", "heart"=>"♥", "club"=>"♣", "spade"=>"♠"];
+    # https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
+
+    $cardSuits = ["diamond"=>"&#x2666", "heart"=>"&#x2665", "club"=>"&#x2663", "spade"=>"&#x2660"];
     $ogDeck = [];
     $counter = 0;
 
@@ -61,6 +63,25 @@ function blankRound()
 }
 
 
+# end of round - Find winner (based on card points for the dealer vs a player)
+function winRound($dealerPoints, $playerPoints)
+{
+    $playerResult = "Tie";
+
+    # dealer wins
+    if ($dealerPoints > $playerPoints && $dealerPoints <= 21) {
+        $playerResult = "Lose";
+    }
+
+    # dealer is bust or player has more points
+    if ($dealerPoints < $playerPoints || $dealerPoints > 21) {
+        $playerResult = "Win";
+    }
+
+    return $playerResult;
+}
+
+
 # SESSION INFLUENCES
 
 # setup ------------
@@ -76,6 +97,20 @@ $setup = [
 if (isset($_SESSION['setup'])) {
     $setup =  $_SESSION['setup'];
 }
+
+$stats = [
+    'rounds' => 0,
+    'wins' => 0,
+    'ties' => 0,
+    'loses' => 0,
+    'blackjacks' => 0,
+ ];
+
+
+if (isset($_SESSION['stats'])) {
+    $stats =  $_SESSION['stats'];
+}
+
 
 
 # page ------------
@@ -180,6 +215,7 @@ if (!$newDeal && $page =="play" && $round['hitstand'] == "hit") {
     # end round: 21 or bust!
     if ($score == 21) {
         $round['player']['winlose'] = "Win";
+        $stats['blackjacks'] ++;
         $endRound = true;
     }
     if ($score > 21) {
@@ -243,7 +279,7 @@ if ($endRound && $setup['multiPlayer']) {
 
 
 # end of round - Dealer must play
-if ($endRound && strlen($round['player']['winlose']) < 1) {
+if ($endRound) {
     # ----------- dealer game play -----------
 
     # dealer hits default is true - this will be changed for specific cases
@@ -283,21 +319,10 @@ if ($endRound && strlen($round['player']['winlose']) < 1) {
 
         $isHit ++;
     }
+    $endRound = true;
 }
 
-# end of round - Find winner
-function winRound($dealer, $player)
-{
-    $playerResult = "Tie";
-    if ($dealer > $player || $dealer <= 21) {
-        $playerResult = "Lose";
-    }
 
-    if ($dealer < $player || $dealer > 21) {
-        $playerResult = "Win";
-    }
-    return $playerResult;
-}
 
 
 # end of round - Find if player wins
@@ -319,22 +344,33 @@ if ($endRound) {
 }
 
 
+echo "<br>player ---------------------<br>";
+
+var_dump($round['player']);
+
+
+
 
 # end of round - Close the round and pay the winner
 if ($endRound) {
+    $stats['rounds'] ++;
     if ($round['player']['winlose'] == "Tie") {
         $setup['cash'] += $round['player']['wager'];
-    }
-
-    if ($round['player']['winlose'] == "Win") {
+        $stats['ties'] ++;
+    } elseif ($round['player']['winlose'] == "Win") {
         $setup['cash'] += 2 * $round['player']['wager'];
+        $stats['wins'] ++;
+    } else {
+        $stats['loses'] ++;
     }
     $round['winner'] = true;
 }
 
+echo "<br>stats";
 
+var_dump($stats);
+echo "<br>stats ---------------";
 
-echo "<br>pagepage" . $page;
 
 
 # update sessions
@@ -342,6 +378,8 @@ $_SESSION['setup'] = $setup;
 $_SESSION['page'] = $page;
 $_SESSION['round'] = $round;
 $_SESSION['deckKeys'] = $deckKeys;
+$_SESSION['stats'] = $stats;
+
 
 
 echo "<br><br>_SESSION:round <br> ";

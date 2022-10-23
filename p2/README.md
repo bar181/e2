@@ -12,6 +12,7 @@ optional
 
 
 https://getbootstrap.com/docs/5.0/forms/overview/
+https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
 
 
 ## Notes for instructor
