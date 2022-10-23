@@ -1,6 +1,7 @@
 <div class="col-6 card m-1 py-2 px-5">
-    <h2 class="mt-5">Rounds Played: <?php echo $stats['rounds']; ?></h2>
-    <h4>Wins: <?php echo $stats['rounds'];?></h4>
+    <h2 class="mt-5">Lifetime Stats</h2>
+    <h4>Rounds Played: <?php echo $stats['rounds'];?></h4>
+    <h4>Wins: <?php echo $stats['wins'];?></h4>
     <h4>Loses: <?php echo $stats['loses'];?></h4>
     <h4>Ties: <?php echo $stats['ties'];?></h4>
     <h4><strong>Blackjacks: <?php echo $stats['blackjacks'];?></strong></h4>

@@ -11,18 +11,15 @@
 </head>
 
 <body>
+    <?php require "navbar-view.php"; ?>
+
     <div class="container">
-        <?php require "navbar-view.php"; ?>
         <?php require "instructions-view.php"; ?>
-
         <div class="d-flex">
-
             <?php ($page == 'starting') ? require "setup-view.php" : "";  ?>
-            <?php ($page == 'newRound') ? require "newRound-view.php" : ""; ?>
+            <?php ($page == 'newRound') ? require "newround-view.php" : ""; ?>
             <?php ($page == 'play') ? require "play-view.php" : ""; ?>
         </div>
-
-
     </div>
 </body>
 

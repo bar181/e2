@@ -8,13 +8,13 @@ if (isset($_GET['quit'])) {
     $_SESSION['page'] = null;
     $_SESSION['round'] = null;
     $_SESSION['deckKeys'] = null;
-    # for rounds only stats
-    $_SESSION['stats'] = null;
+    # option to show only rounds only stats uncomment
+    # $_SESSION['stats'] = null;
 }
 
 # set up page - clear old sessions and get set up variables
 if (isset($_POST['setup'])) {
-    # reset  sessions
+    # reset round sessions
     $_SESSION['round'] = null;
     $_SESSION['deckKeys'] = null;
 
@@ -30,6 +30,7 @@ if (isset($_POST['setup'])) {
         $playerName = "Player";
     }
 
+    # set setup variables
     $_SESSION['setup'] = [
            'playerName' => $playerName,
            'cash' => $cash,

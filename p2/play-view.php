@@ -9,6 +9,7 @@
         <?php foreach ($round["dealer"]["cards"] as $card) { ?>
         <span class="showcard fs-4 <?php echo $card['style']; ?>"><?php echo $card["show"]; ?></span>
         <?php } ?>
+
     </div>
 </div>
 
@@ -19,9 +20,11 @@
     </div>
     <hr>
     <div class="d-flex flex-wrap">
+
         <?php foreach ($round["player"]["cards"] as $card) { ?>
         <span class="showcard fs-4 <?php echo $card['style']; ?>"><?php echo $card["show"]; ?></span>
         <?php } ?>
+
     </div>
     <hr>
     <div class="my-4 card bggreen <?php echo ($round['winner']) ? 'hide' : 'show' ?>">
@@ -70,15 +73,14 @@
     </div>
     <hr>
     <div class="d-flex flex-wrap">
+
         <?php foreach ($round["ai"]["cards"] as $card) { ?>
         <span class="showcard fs-4 <?php echo $card['style']; ?>"><?php echo $card["show"]; ?></span>
         <?php } ?>
+
     </div>
-
-
     <div class="text-center <?php echo ($round['winner']) ? 'show' : 'hide' ?>">
         <hr>
         <h1 class="pt-4"><?php echo $round["ai"]["winlose"] ;?></h1>
     </div>
-
 </div>
