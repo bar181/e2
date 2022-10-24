@@ -9,8 +9,8 @@ function createDeck()
 {
     $cardValues = array("2"=>2, "3"=>3, "4"=>4, "5"=>5, "6"=>6, 7=>7, "8"=>8,
     "9"=>9, "10"=>10, "J"=>10, "Q"=>10, "K"=>10, "A"=>11);
-    # https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
 
+    # https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
     $cardSuits = ["diamond"=>"&#x2666", "heart"=>"&#x2665", "club"=>"&#x2663", "spade"=>"&#x2660"];
     $ogDeck = [];
     $counter = 0;
@@ -134,18 +134,17 @@ $ogDeck = createDeck();
 # defaults
 $endRound = false;
 
-
 # new round actions
-# shuffle deck, update cash based on wager and deal first card to each player
+# shuffle deck, update cash based on wager, deal first card to each player
 if ($newDeal && $page == "play") {
     $setup["round"] ++;
 
-    # round set up
+    # round set up (shuffle deck, empty round array)
     $deckKeys = array_keys($ogDeck);
     shuffle($deckKeys);
     $round = blankRound();
 
-    # adjust cash balances for new round
+    # adjust cash balances for new round (save wager for player)
     $setup["cash"] -= $setup["wager"];
     $round["player"]["wager"] = $setup["wager"];
     $setup["wager"] = 0;
@@ -226,12 +225,12 @@ if (!$newDeal && $page =="play" && $round["hitstand"] == "stand") {
 
 # ------------- AI GAME PLAY ------------
 
-# end of player round - AI automated game play if ption is selected
+# end of player round - AI automated game play if option is selected
 if ($endRound && $setup["multiPlayer"]) {
     # default toggle player must hit (boolean default)
     $isHit = 1;
 
-    # player continues to receive additional cards until a winner is decided or player stands
+    # ai continues to receive additional cards - max 7 cards or logic based on points
     while ($isHit < 8) {
         # local variable score (for readability only)
         $dealerValue = $round["dealer"]["cardValues"];

@@ -8,6 +8,6 @@
         <li><strong>House Rules:</strong> Dealer stands on 17. Ties reimbursed. Deck shuffled each round.
             Hit or Stand defaults to recommendation.
         </li>
-        <li><strong>Love the Painting:</strong> I painted it !</li>
+        <li><strong>Painting:</strong> I painted it !</li>
     </ul>
 </div>

@@ -5,13 +5,13 @@
 ## Game Planning
 General
 + User completes a form based on their process
-+ Forms are posted to process.php: save inputs to sessions, identifies the new process page
-+ Index runs logic depending on the process saved in sessions
-+ Index-view displays html and views/forms as determined by the index logic
++ Forms are posted to a process page: save inputs to sessions, identifies the new logic page
++ Index runs logic depending on the page to process
++ Index-view displays html and other views/forms as determined by the index logic
 
 Set up: 
 + View: Shows welcome page
-+ Form: The user enters their name and cash available.  Multiplayer options that will show an additional player (AI not user input)
++ Form: The user enters their name and cash available.  Multiplayer option to show an additional player (AI not user input)
 + Process: Saves setup details in sessions
 + Logic: Sets defaults for other session variables
 
@@ -21,22 +21,22 @@ New Round:
 + Process: Sets sessions to default (null) round
 + Logic: Starts the game play - shuffle a deck of cards, deals a card to the dealer, user and AI player
 
-Round - User Hit or Stand:
+Game Play - User Hit or Stand:
 + View: Displays cards and point values for the dealer, user and AI player
 + Form: User hits (request another card) or stands (ends round)
 + Process: updates Hit or Stand session, repeat this stage until user busts or stands
-+ Logic: If user hits, add a new card from the deck and update total.  If user busts or stands, the round is over
++ Logic: If user hits, add a new card from the deck and update running totals.  If user busts or stands, the round is over
 
 End of Round:
 + View: Show round results (win, lose or tie), update cash balance
-+ Form: Continue to new round page 
++ Form: User clicks to open new round page 
 + Process: Reset round and cards to make ready for a new round
 + Logic: Dealer and AI player game play based on pre-determined logic, identify round winners, update player totals
 
 End of Game:
 + Display message if user is out of money
 
-Quit Button (display in navbar or end of game):
+Quit Button (display in navbar or on end round page when game is over):
 + Resets to the start of the game allowing the user to add more cash
 
 
@@ -68,8 +68,8 @@ p2
 
 ## Outside resources (used in Project 1)
 + [Generic blackjack rules for game play, logic and rules](https://en.wikipedia.org/wiki/Blackjack)
-+ [Suits icons css from course example](https://hesweb.dev/files/e2p1-examples/war/)
-+ [Table css](https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy)
++ [Suits icons style from course example](https://hesweb.dev/files/e2p1-examples/war/)
++ [Table style](https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy)
 + [Color theme for table colors](https://material.io/design/color/the-color-system.html#color-theme-creation)
 + [refresher on associative arrays](https://www.w3schools.com/php/php_arrays_associative.asp)
 
@@ -83,5 +83,5 @@ p2
 + [E2P2 working version](https://github.com/bar181/e2/commit/0e9fbf19afd248a9cfc3f4550ba6f7b6f1a53ad6)
 + [e2p2 Add multiplayer - adds a computer generated player option](https://github.com/bar181/e2/commit/4aab400588ffe03ef5defb886b8128930e5df20c)
 + [e2p2 multiple views - change design to include multiple views](https://github.com/bar181/e2/commit/8e4c246234466b1f6d61c1fe17e6c54f65323cf0)
-
-
++ [E2P2 ready for testing - code refactored and clean](https://github.com/bar181/e2/commit/8a05cbccee838b7c913b5abb3fc50d11adf43bc0)
++ Final submission 
