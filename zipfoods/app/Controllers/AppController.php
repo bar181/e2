@@ -9,15 +9,22 @@ class AppController extends Controller
      */
     public function index()
     {
-        $welcomes = ['Welcome', 'Aloha', 'Welkom', 'Bienvenidos', 'Bienvenu', 'Welkomma'];
-
-        return $this->app->view('index', [
-            'welcome' => $welcomes[array_rand($welcomes)]
-        ]);
+        return $this->app->view('index');
     }
 
     public function about()
     {
         return $this->app->view('about');
+    }
+
+    public function contact()
+    {
+        $email = "zipfoods@brad.ross.me";
+
+        return $this->app->view('contact', [
+            'email' => $email]);
+
+        // test Q 3
+        // return $this->app->view('x/y/z');
     }
 }
