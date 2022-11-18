@@ -186,3 +186,14 @@ a.product-link:hover {
 #product-review textarea {
     height: 100px;
 }
+
+#product-reviews {
+    margin: 20px auto;
+    max-width: 75%;
+    background-color: #91aff1;
+    border-radius: 3px;
+    padding: 10px;
+}
+#product-reviews li {
+    text-align: left;
+}
