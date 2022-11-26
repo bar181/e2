@@ -197,3 +197,32 @@ a.product-link:hover {
 #product-reviews li {
     text-align: left;
 }
+
+
+#product-new {
+    margin: 20px auto;
+    max-width: 75%;
+    background-color: #eee;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+#product-new input {
+    width: 200px;
+    margin: auto;
+}
+
+#product-new textarea {
+    height: 100px;
+}
+
+#perishable {
+    width: 200px;
+    margin: auto;
+     margin: 20px auto;
+    max-width: 75%;
+    background-color: #FFF;
+    border-radius: 3px;
+    padding: 5px;
+    font-size: inherit;
+}

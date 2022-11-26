@@ -19,6 +19,9 @@
         @endphp --}}
         <h1><a href="/"><img id='logo' src='/images/zipfoods-logo.png'
                     alt='{{ $app->config('app.name') }} Logo'></a></h1>
+        <div class="float-end pe-5">
+            <h4><a href="/products/new">Add a product</a></h4>
+        </div>
     </header>
 
     <main>

@@ -13,7 +13,8 @@
             <a class='product-link' href='/product?sku={{ $product['sku'] }}'>
                 <div>
                     <div class='product-name'>{{ $product['name'] }}</div>
-                    <img class='product-thumb' src="/images/products/{{ $product['sku'] }}.jpg">
+                    <img class='product-thumb'
+                        src="/images/products/{{ $product['id'] < 11 ? $product['sku'] : 'dogs_poker' }}.jpg">
                 </div>
             </a>
         @endforeach
