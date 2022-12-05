@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <h2>Welcome!</h2>
+    <h2 test='welcome'>Welcome!</h2>
 
     <p>
         {{ $app->config('app.name') }} is your one-stop-shop for convenient online grocery shopping in the greater Boston

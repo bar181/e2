@@ -6,10 +6,10 @@
 
 @section('content')
     @if ($reviewSaved)
-        <div class='alert alert-success'>Thank you, your review was submitted!</div>
+        <div test='review-confirmation' class='alert alert-success'>Thank you, your review was submitted!</div>
     @endif
     @if ($app->errorsExist())
-        <ul class='error alert alert-danger'>
+        <ul test='review-error' class='error alert alert-danger'>
             Errors - please correct
         </ul>
     @endif
@@ -29,17 +29,18 @@
         <input type='hidden' name='product_id' value='{{ $product['id'] }}'>
         <input type='hidden' name='sku' value='{{ $product['sku'] }}'>
         <div class='form-group'>
-            <label for='name'>Name</label>
-            <input type='text' class='form-control' name='name' id='name' value='{{ $app->old('name') }}'>
+            <label for='name'>Your Name</label>
+            <input test='reviewer-name-input' type='text' class='form-control' name='name' id='name'
+                value='{{ $app->old('name') }}'>
         </div>
 
         <div class='form-group'>
             <label for='review'>Review</label>
-            <textarea name='review' id='review' class='form-control'>{{ $app->old('review') }}</textarea>
+            <textarea test='review-textarea' name='review' id='review' class='form-control'>{{ $app->old('review') }}</textarea>
             (minimum 200 characters)
         </div>
 
-        <button type='submit' class='btn btn-primary'>Submit Review</button>
+        <button test='review-submit-button' type='submit' class='btn btn-primary'>Submit Review</button>
     </form>
 
     @if ($app->errorsExist())
@@ -51,16 +52,19 @@
     @endif
 
 
-    @if ($reviews)
-        <div id="product-reviews" class="py-3">
-            <h2>REVIEWS</h2>
-            <ol>
-                @foreach ($reviews as $review)
-                    <li><strong>{{ $review['name'] }} wrote: </strong> {{ $review['review'] }}</li>
-                @endforeach
-            </ol>
-        </div>
-    @endif
+
+    <div id="product-reviews" class="py-3">
+        <h2>REVIEWS</h2>
+        @if ($reviews)
+            @foreach ($reviews as $review)
+                <div test='review-name' class="border shadow-sm bg-light mb-3 p-2"><strong>{{ $review['name'] }} wrote:
+                    </strong></div>
+                <div test='review-content' class="border shadow-sm bg-light mb-3 p-2">{{ $review['review'] }}</div>
+            @endforeach
+        @else
+            There are no review yet ... be the first to review
+        @endif
+    </div>
 
     <a href='/products'>&larr; Return to all products</a>
 @endsection

@@ -71,7 +71,15 @@ class ProductsController extends Controller
 
     public function newProduct()
     {
-        return $this->app->view('products/newproduct');
+        // return $this->app->view('products/newproduct');
+
+        $productSaved = $this->app->old('productSaved');
+        $sku = $this->app->old('sku');
+
+        return $this->app->view('products/newproduct', [
+            'productSaved' => $productSaved,
+            'sku' => $sku,
+        ]);
     }
 
 
@@ -79,7 +87,7 @@ class ProductsController extends Controller
     {
         $this->app->validate([
             'name' => 'required',
-            'sku' => 'required',
+            'sku' => 'required|alphaNumericDash',
             'description' => 'required',
             'price' => 'required|numeric',
             'available' => 'required|digit',
@@ -88,25 +96,43 @@ class ProductsController extends Controller
         ]);
         # validation error returns redirect
 
-        $name = $this->app->input('name');
-        $sku = $this->app->input('sku');
-        $description = $this->app->input('description');
-        $price = $this->app->input('price');
-        $available = $this->app->input('available');
-        $weight = $this->app->input('weight');
-        $perishable = $this->app->input('perishable');
+        # my long way do not need to save all the inputs, can use inputAll()
+
+        // $name = $this->app->input('name');
+        // $sku = $this->app->input('sku');
+        // $description = $this->app->input('description');
+        // $price = $this->app->input('price');
+        // $available = $this->app->input('available');
+        // $weight = $this->app->input('weight');
+        // $perishable = $this->app->input('perishable');
 
 
-        $this->app->db()->insert('products', [
-            'name' => $name ,
-            'sku' => $sku ,
-            'description' => $description ,
-            'price' => $price ,
-            'available' => $available ,
-            'weight' => $weight ,
-            'perishable' => $perishable ,
+        // $this->app->db()->insert('products', [
+        //     'name' => $name ,
+        //     'sku' => $sku ,
+        //     'description' => $description ,
+        //     'price' => $price ,
+        //     'available' => $available ,
+        //     'weight' => $weight ,
+        //     'perishable' => $perishable ,
+        // ]);
+
+        # alt way if do not have all the fields
+        // $newProducts = [
+        //     'name' => $this->app->input('name'),
+        //     'sku' => $this->app->input('sku'),
+        //     ....
+        // ]
+        // $this->app->db()->insert('products', $newProducts);
+
+
+        $this->app->db()->insert('products', $this->app->inputAll());
+
+
+        $this->app->redirect('/products/new', [
+            'productSaved' => true,
+            'sku' => $this->app->input('sku'),
+
         ]);
-
-        $this->app->redirect('/products');
     }
 }

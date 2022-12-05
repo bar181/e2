@@ -190,11 +190,10 @@ a.product-link:hover {
 #product-reviews {
     margin: 20px auto;
     max-width: 75%;
-    background-color: #91aff1;
     border-radius: 3px;
     padding: 10px;
 }
-#product-reviews li {
+#product-reviews div {
     text-align: left;
 }
 
@@ -202,13 +201,13 @@ a.product-link:hover {
 #product-new {
     margin: 20px auto;
     max-width: 75%;
-    background-color: #eee;
+
     border-radius: 3px;
     padding: 10px;
 }
 
 #product-new input {
-    width: 200px;
+    width: 100%;
     margin: auto;
 }
 
