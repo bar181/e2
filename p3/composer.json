@@ -1,0 +1,30 @@
+{
+    "name": "susanbuck/e2framework",
+    "description": "DGMD E-2 Framework Application",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "susanbuck/e2core": "^0.1.0",
+        "fakerphp/faker": "^1.20"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "php -r \"copy('.env.example', '.env');\""
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.0",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-phpbrowser": "*"
+    }
+}

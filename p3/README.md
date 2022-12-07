@@ -1,24 +1,25 @@
-_Any instructions/notes in italics should be removed from the template before submitting_
-
 # Project 3
 + By: Bradley Ross
 + URL: <http://e2p3.bradross.me>
 
 ## Game planning
-_In plain english - no code - think through how you'll make this game work. Example:_
-+ _Create an array of two options, heads and tails._
-+ _Randomly choose one of these options from the array and assign it as Player A's move_
-+ _Assign Player B's move to whatever option was not chosen._
-+ _Randomly choose from the array of heads/tails again and assign this as the "flip" value_
-+ _If Player A's move matches "flip", then assign a value winner to Player A_
-+ _Otherwise, assign a value winner to Player B_
-+ _Report the results of Player A's Move, Player B's move, the flip, and the winner to the page_
++ Create an array of two options, heads and tails.
++ Randomly choose one of these options from the array and assign it as Player A's 
 
 
-
+## Graduate requirement
++ [x] I have integrated testing into my application
++ [ ] I am taking this course for undergraduate credit and have opted out of integrating testing into my application
 
 ## Outside resources
-*your list of outside resources go here*
+timestamp format with php https://stackoverflow.com/questions/5632662/saving-timestamp-in-mysql-table-using-php
 
 ## Notes for instructor
-*any notes for me to refer to while grading; if none, omit this section*
+
+
+### Codeception testing output
+
+```
+Codeception PHP Testing Framework v4.1.22
+
+```
