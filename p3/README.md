@@ -14,6 +14,10 @@
 ## Outside resources
 timestamp format with php https://stackoverflow.com/questions/5632662/saving-timestamp-in-mysql-table-using-php
 
+playing cards css  https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
+
+display html entities https://stackoverflow.com/questions/29253979/displaying-html-with-blade-shows-the-html-code
+
 ## Notes for instructor
 
 

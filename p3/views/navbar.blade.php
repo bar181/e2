@@ -13,14 +13,16 @@
                     <div class="fs-4 fs-bold">{{ $player['name'] }}</div>
                     <div test="navbar-cash" class="">Cash Balance ${{ $player['cash'] }}</div>
                     @if ($player['multiplayer'] > 0)
-                        <div test="navbar-multiplayer">AI level {{ $player['ailevel'] }}</div>
+                        <div test="navbar-multiplayer">A.I. aggression level:
+                            {{ $player['ailevel'] > 2 ? 'MAX' : $player['ailevel'] }}</div>
                     @endif
                 @endif
             </div>
 
             <div class="col-4 text-end">
-                <a class="button btn btn-danger mx-2" href="/">Start Over</a>
-                <a class="button btn btn-info mx-2" href="/history">History</a>
+                <a class="button btn btn-sm btn-danger mx-2" href="/">Start Over</a>
+                <a class="button btn btn-sm  btn-info mx-1" href="/history">History</a>
+                <a class="button btn btn-sm btn-info " href="/play">Continue</a>
             </div>
         </nav>
     </div>

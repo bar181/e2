@@ -20,6 +20,8 @@ class AppCommand extends Command
             'cash' => 'int',
             'multiplayer' => 'tinyint(1)',
             'ailevel' => 'int',
+            'round_id' => 'int',
+            'play' => 'varchar(4)',
             'timestamp' => 'timestamp'
         ]);
 
@@ -46,6 +48,7 @@ class AppCommand extends Command
             'presult' => 'varchar(4)',
             'dresult' => 'varchar(4)',
             'airesult' => 'varchar(4)',
+            'deckkeys' => 'text',
             'timestamp' => 'timestamp'
         ]);
 
@@ -64,6 +67,10 @@ class AppCommand extends Command
         $tieScore = 17;
         $lossScore = 23;
         $player_id = 1;
+
+        for ($i = 0; $i<52; $i++) {
+            $deckKeys[] = $i;
+        }
 
         # add player data
         $playerData = [
@@ -126,23 +133,41 @@ class AppCommand extends Command
                 'timestamp' => $timestamp,
             ];
 
-            $this->app->db()->insert('rounds', $roundData);
+            $round_id = $this->app->db()->insert('rounds', $roundData);
 
+            shuffle($deckKeys);
             # add simulation to hands
             $handData = [
                 'player_id' => $player_id,  // foreign key player
-                'round_id' => ($i + 1),     // foreign key rounds - starts at 1
+                'round_id' => $round_id,     // foreign key rounds - starts at 1
                 'pcards' => $pcards,
                 'dcards' => $dcards,
                 'pscore' => $pscore,
                 'dscore' => $dscore,
                 'presult' => $presult,
                 'dresult' => $dresult,
+                'deckkeys' => implode(",", $deckKeys),
                 'timestamp' => $timestamp,
             ];
 
             $this->app->db()->insert('hands', $handData);
         }
+
+        # update player to current round
+        $sql = "UPDATE players 
+                SET 
+                    round_id = :round_id, 
+                    play = :play
+                WHERE id = :player_id ";
+
+        $data = [
+            'round_id' => $round_id,
+            'play' => "done",
+            'player_id' => $player_id,
+        ];
+
+        $this->app->db()->run($sql, $data);
+
 
         dump("seed done");
         dump("select * from players;");

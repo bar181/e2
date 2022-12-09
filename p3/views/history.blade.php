@@ -5,6 +5,10 @@
 @endsection
 
 @section('content')
+    <div class="d-flex justify-content-center me-4">
+        @include('game-stats')
+    </div>
+
     <h2> Round History</h2>
 
     <ul>

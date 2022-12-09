@@ -3,18 +3,26 @@
 @section('content')
     @include('instructions')
 
-    <form method="POST" action="post_play">
+    <div class="d-flex justify-content-center">
+        @include('play-dealer')
 
+        @include('play-player')
 
-        <div class="">
-            <h2>PLAY</h2>
-        </div>
+        @if ($player['multiplayer'] > 0)
+            @include('play-ai')
+        @endif
 
-
-
-        <div class="d-flex justify-content-center">
-            <input type="text" id="player_id" name="player_id" value="{{ $player['id'] }}">
-            <button type="submit" class="btn btn-primary mb-3">Deal</button>
-        </div>
-    </form>
+    </div>
+    <div class="d-flex justify-content-center">
+        @if ($player['play'] != 'done')
+            @include('play-options')
+        @else
+            @if ($player['cash'] > 0)
+                @include('play-over')
+            @else
+                @include('game-stats')
+                @include('game-over')
+            @endif
+        @endif
+    </div>
 @endsection
