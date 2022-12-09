@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 class HelperController extends Controller
 {
+    # convert the player's card keys to hmtl format (e.g. key 0 back to 2♦)
     public static function getCardDisplay($cardString, $ogDeck)
     {
         $cardKeys = explode(",", $cardString);
@@ -14,6 +15,7 @@ class HelperController extends Controller
         return $returnData;
     }
 
+    # sum the player's cards
     public static function getCardsValue($cardString, $ogDeck)
     {
         $cardsValue = 0;
@@ -24,15 +26,16 @@ class HelperController extends Controller
             $aces = ($ogDeck[$key]['value'] > 10) ? ($aces += 1) : $aces;
         }
 
-        # adjust for aces (Brad's formula) - see source for ternary ?:
+        # adjust for aces (Brad's formula)- need to repeat in case of 3+ aces
         if ($cardsValue > 21 && $aces > 0) {
             $cardsValue -= $aces * 10;
             if ($cardsValue <= 11) {
                 $cardsValue -= 10;
             }
+            if ($cardsValue <= 11) {
+                $cardsValue -= 10;
+            }
         }
-
-        // dump('getCardsValue', $cardsValue, $aces, $cardString);
 
         return $cardsValue;
     }

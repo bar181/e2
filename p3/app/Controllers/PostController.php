@@ -13,8 +13,7 @@ class PostController extends Controller
 
     public function post_setup()
     {
-        # user enters their name, cash and multiplayer select
-        # validate inputs
+        # validate: name, cash and multiplayer select
         # update players table
         # send player to wager page
 
@@ -23,31 +22,21 @@ class PostController extends Controller
             'cash' => 'required|numeric|min:10|max:1000',
         ]);
 
-        # current user details
+        # current player details
         $player_id = 1;
+        $playerData = $this->app->db()->findById('players', $player_id);
 
-        # update players table with inputs
-        $sql = "UPDATE players 
-                SET 
-                    name = :name, 
-                    cash = :cash,
-                    startcash = :startcash,
-                    ailevel = :ailevel,
-                    multiPlayer = :multiPlayer,
-                    timestamp = :timestamp
-                WHERE id = :player_id ";
+        # update playersData with inputs
+        $playerData['name'] = $this->app->input('name');
+        $playerData['cash'] = $this->app->input('cash');
+        $playerData['startcash'] = $this->app->input('cash');
+        $playerData['ailevel'] = rand(1, 3);
+        $playerData['play'] = "new";
+        $playerData['multiPlayer'] = ($this->app->input('multiPlayer')) ? 1 : 0;
+        $playerData['name'] = $this->app->input('name');
 
-        $data = [
-            'name'=> $this->app->input('name'),
-            'cash' => $this->app->input('cash'),
-            'startcash' => $this->app->input('cash'),
-            'ailevel' => rand(1, 3),
-            'multiPlayer' => ($this->app->input('multiPlayer')) ? 1 : 0,
-            'timestamp' => date("Y-m-d H:i:s"),
-            'player_id' => $player_id,
-        ];
-
-        $this->app->db()->run($sql, $data);
+        # update players table
+        self::updateTableById($playerData, 'players');
 
         # all good send player to wager page
         $this->app->redirect('/wager');
@@ -75,12 +64,13 @@ class PostController extends Controller
 
         # required variables
         $wager = $this->app->input('wager');
-        $player = $this->app->db()->findById('players', $player_id);
+        $playerData = $this->app->db()->findById('players', $player_id);
 
         # ensure wager is more than player cash
         # form handles this but need to prevent JS form manipulation
-        if ($player['cash'] < $wager) {
+        if ($playerData['cash'] < $wager) {
             $this->app->redirect('/gameover');
+            return;
         }
 
         # insert rounds table: wager, nil for win/tie/loss
@@ -103,22 +93,10 @@ class PostController extends Controller
         $this->app->db()->insert('hands', $handsData);
 
         # update players table: adjust cash and round level
-        $sql = "UPDATE players 
-                SET 
-                    cash = :cash,
-                    round_id = :round_id,
-                    play = :play,
-                    timestamp = :timestamp
-                WHERE id = :player_id ";
-
-        $playersData = [
-            'cash' => $player['cash'] - $wager,
-            'round_id' => $round_id,
-            'play' => "new",
-            'timestamp' => date("Y-m-d H:i:s"),
-            'player_id' => $player_id
-        ];
-        $this->app->db()->run($sql, $playersData);
+        $playerData['cash'] -= $wager;
+        $playerData['round_id'] = $round_id;
+        $playerData['play'] = "new";
+        self::updateTableById($playerData, 'players');
 
         # all good - open play
         $this->app->redirect('/play', ['player_id' => $player_id]);
@@ -129,7 +107,7 @@ class PostController extends Controller
         $player_id = 1;
         $endRound = true;
 
-        # get database data (player, hand)
+        # get database data (players, hands)
         $playerData = $this->app->db()->findById('players', $player_id);
         $round_id = $playerData['round_id'];
         $handsData = $this->app->db()->findByColumn('hands', 'round_id', '=', $round_id)[0];
@@ -161,12 +139,10 @@ class PostController extends Controller
 
         # check if round is over
         if ($endRound) {
-            # end of round action - ai and dealer play
-            # update database tables
+            # end of round action - simulate game and evalute results
             self::endOfRoundProcess($playerData, $handsData, $deckKeys);
         } else {
             # player continues to play
-            # save update to hands table and return to play URL
             $handsData['deckkeys'] = implode(",", $deckKeys);
             self::updateTableById($handsData, 'hands');
         }
@@ -190,6 +166,11 @@ class PostController extends Controller
 
     public function endOfRoundProcess($playerData, $handsData, $deckKeys)
     {
+        # cards for ai player
+        # cards for dealer
+        # evaluate winners
+        # save results in database
+
         $ogDeck = HelperController::createDeck();
         $round_id = $playerData['round_id'];
 
@@ -198,8 +179,6 @@ class PostController extends Controller
             # default settings for ai
             $isHit = 1;
             $ailevel = $playerData['ailevel'];
-            $dealerCard = $handsData['dscore'];
-
 
             # ai game play (hit/stand decision based on ai agression level)
             while ($isHit < 8) {
@@ -232,7 +211,6 @@ class PostController extends Controller
 
         # dealer play
         $isHit = 1;
-
         while ($isHit < 8) {
             $handsData['dscore'] = HelperController::getCardsValue($handsData['dcards'], $ogDeck);
 
@@ -260,7 +238,6 @@ class PostController extends Controller
         if ($playerData['multiplayer'] > 0 && is_null($handsData['airesult'])) {
             $handsData['airesult'] = self::getResults($handsData['aiscore'], $handsData['dscore']);
         }
-
 
         # update the hands table
         $handsData['deckkeys'] = implode(",", $deckKeys);

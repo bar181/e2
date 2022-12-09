@@ -6,10 +6,6 @@ use Tests\Support\AcceptanceTester;
 
 class SetupCest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
-
     // test new user set up page (route: /)
     public function goodNewUser(AcceptanceTester $I)
     {

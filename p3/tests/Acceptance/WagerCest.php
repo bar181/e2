@@ -26,9 +26,6 @@ class WagerCest
         $I->amOnPage('/wager');
         $I->see('40', '[test=navbar-cash]');
         $I->dontSeeElement('[test=wager-w50]');
-        $I->fillField('[test=wager-w10]', '10');
         $I->click('[test=submit-wager]');
-
-        // $I->see('90', '[test=navbar-cash]');
     }
 }

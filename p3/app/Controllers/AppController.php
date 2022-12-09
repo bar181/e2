@@ -28,7 +28,7 @@ class AppController extends Controller
 
     public function history()
     {
-        # show history of all rounds
+        # show summary stats and history of all rounds
 
         $player_id = 1;
 
@@ -61,8 +61,7 @@ class AppController extends Controller
 
     public function wager()
     {
-        # show wager page or end of game
-        # params: player (from players table)
+        # show wager page
 
         $player_id = 1;
         $playerData = $this->app->db()->findById('players', $player_id);
@@ -70,6 +69,7 @@ class AppController extends Controller
         # check for end of game (cash nil or double starting cash)
         if ($playerData['cash'] < 10 || $playerData['cash'] > ($playerData['startcash'] * 2)) {
             $this->app->redirect('/gameover');
+            return;
         }
 
         return $this->app->view('wager', [
@@ -93,11 +93,13 @@ class AppController extends Controller
          if ($play_process == "new") {
              # update database with new deck of cards and assign hold/flop cards
              self::startNewHand($round_id, $playerData);
+
+             $playerData['play'] = "play";
+             self::updateTableById($playerData, 'players');
          }
 
-         # origial deck: show (HTML display), value (card points), style (black or red)
+         # original deck: show (HTML display), value (card points), style (black or red)
          $ogDeck = HelperController::createDeck();
-
          $handsData = $this->app->db()->findByColumn('hands', 'round_id', '=', $round_id)[0];
 
          # display values for HMTL
@@ -127,6 +129,7 @@ class AppController extends Controller
 
      public function statsSummary()
      {
+         # get total: win, tie, loss, games to display
          $allRounds = $this->app->db()->all('rounds');
          $statsSummary['win'] = 0;
          $statsSummary['tie']= 0;
@@ -146,7 +149,8 @@ class AppController extends Controller
     public function startNewHand($round_id, $playerData)
     {
         # creates the initial cards to start the game
-        # call function to update hands database
+        # deals cards to all players
+        # updates results in hands table
 
         # get existing hands data based on the round
         $handsData = $this->app->db()->findByColumn('hands', 'round_id', '=', $round_id)[0];
@@ -183,59 +187,35 @@ class AppController extends Controller
 
 
         # update database with new hand data
-        self::postNewHand($handsData, $deckKeys);
+        $handsData['deckkeys'] = implode(",", $deckKeys);
+        self::updateTableById($handsData, 'hands');
     }
 
-    public function updatePlayerPlay($player_id, $playValue)
+
+    public function updateTableById($updateDataArray, $tableName)
     {
-        # updates the players database table for play
-        $sql = "UPDATE players 
-                SET 
-                    play = :play,
-                    timestamp = :timestamp
-                WHERE id = :player_id ";
+        # updates the table $tableName for row $updateDataArray['id']
+        # updates all fields in $updateDataArray
 
-        $updateData = [
-            'play' => $playValue,
-            'timestamp' => date("Y-m-d H:i:s"),
-            'player_id' => $player_id
-        ];
-        $this->app->db()->run($sql, $updateData);
+        $setQuery = "";
+        foreach (array_keys($updateDataArray) as $key) {
+            if ($key != "id") {
+                $setQuery .=  $key . " = :" . $key . ", ";
+            }
+        }
+        $setQuery = rtrim($setQuery, ", ");
+
+        # update timestamp if key exists
+        if (array_key_exists("timestamp", $updateDataArray)) {
+            $updateDataArray['timestamp'] = date("Y-m-d H:i:s");
+        }
+
+        $sql = "UPDATE " . $tableName . "
+                SET " . $setQuery . "
+                WHERE id = :id ";
+
+        # use framework PDO format to update all fields
+        $this->app->db()->run($sql, $updateDataArray);
+        return;
     }
-
-     public function postNewHand($handsData, $deckKeys)
-     {
-         # posts new hands data to database
-         # updates the player's process
-
-         self::updatePlayerPlay($handsData['player_id'], 'Play');
-
-
-         $sql = "UPDATE hands 
-                SET 
-                    pcards = :pcards,
-                    dcards = :dcards,
-                    aicards = :aicards,
-                    pscore = :pscore,
-                    dscore = :dscore,
-                    aiscore = :aiscore,
-                    deckkeys = :deckkeys,
-                    timestamp = :timestamp
-                WHERE id = :hand_id ";
-
-         $updateData = [
-             'pcards' => $handsData['pcards'],
-             'dcards' => $handsData['dcards'],
-             'aicards' => $handsData['aicards'],
-             'pscore' => $handsData['pscore'],
-             'dscore' => $handsData['dscore'],
-             'aiscore' => $handsData['aiscore'],
-             'deckkeys' => implode(",", $deckKeys),
-             'timestamp' => date("Y-m-d H:i:s"),
-             'hand_id' => $handsData['id']
-         ];
-         $this->app->db()->run($sql, $updateData);
-
-         return;
-     }
 }

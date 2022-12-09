@@ -1,4 +1,4 @@
-<div class="col-3 card m-1 p-2 text-center">
+<div test="dealer-play" class="col-3 card m-1 p-2 text-center">
     <h2>Dealer</h2>
     <div class="fs-4">
         Points: <?php echo $round['dealer']['score']; ?>
@@ -12,7 +12,7 @@
     @if (!is_null($round['dealer']['result']))
         <hr>
         <div class="fs-4">
-            Result: <?php echo $round['dealer']['result']; ?>
+            Result: {{ $round['dealer']['result'] }}
         </div>
     @endif
 </div>

@@ -10,8 +10,6 @@ return [
     '/post_wager' => ['PostController', 'post_wager'],
     '/play' => ['AppController', 'play'],
     '/post_play' => ['PostController', 'post_play'],
-    '/gameover' => ['AppController', 'gameover'],
-
     '/history' => ['AppController', 'history'],
     '/round' => ['AppController', 'round'],
 

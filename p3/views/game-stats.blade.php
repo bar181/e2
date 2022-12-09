@@ -1,5 +1,5 @@
 <div class="col-6 card m-1 p-2 text-center">
-    <div class=" my-4 ">
+    <div test="game-stats" class=" my-4 ">
 
         <h2>Game Stats</h2>
         <div class="fs-4">Won {{ $statsSummary['win'] }}</div>

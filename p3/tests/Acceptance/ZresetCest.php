@@ -8,7 +8,7 @@ class ZResetCest
 {
     // resets DB back to defaults
 
-    public function goodWager(AcceptanceTester $I)
+    public function resetPlayerDefaults(AcceptanceTester $I)
     {
         // set specific user and cash value
         $I->amOnPage('/');

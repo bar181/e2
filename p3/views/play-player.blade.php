@@ -1,7 +1,7 @@
-<div class="col-6 card m-1 p-2 text-center">
+<div test="player-play" class="col-6 card m-1 p-2 text-center">
     <h2>Player</h2>
     <div class="fs-4">
-        Points: {{ $round['player']['score'] }}
+        Points: <span test="player-score">{{ $round['player']['score'] }} </span>
     </div>
     <hr>
     <div class="d-flex flex-wrap justify-content-center">
