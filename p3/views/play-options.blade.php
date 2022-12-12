@@ -2,6 +2,7 @@
 
     <hr>
     <div class=" my-4 card">
+
         <form method="POST" action="post_play">
             <div class="my-4 d-flex justify-content-around fs-3">
                 <div class="form-check px-3">
@@ -24,8 +25,6 @@
                 <button test="hitstand-submit" type="submit" class="btn btn-primary mb-3 fs-1">Play !</button>
             </div>
         </form>
+
     </div>
-
-
-
 </div>

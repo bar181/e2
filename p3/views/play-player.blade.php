@@ -9,6 +9,7 @@
             <span class="showcard fs-4 {{ $card['style'] }}"> {!! $card['show'] !!} </span>
         @endforeach
     </div>
+
     @if (!is_null($round['player']['result']))
         <hr>
         <div class="fs-4">

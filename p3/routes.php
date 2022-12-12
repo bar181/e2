@@ -12,5 +12,6 @@ return [
     '/post_play' => ['PostController', 'post_play'],
     '/history' => ['AppController', 'history'],
     '/round' => ['AppController', 'round'],
+    '/winner' => ['AppController', 'winner'],
 
 ];

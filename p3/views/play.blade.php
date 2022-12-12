@@ -2,7 +2,6 @@
 
 @section('content')
     @include('instructions')
-
     <div class="d-flex justify-content-center">
         @include('play-dealer')
 
@@ -11,8 +10,8 @@
         @if ($player['multiplayer'] > 0)
             @include('play-ai')
         @endif
-
     </div>
+
     <div class="d-flex justify-content-center">
         @if ($player['play'] != 'done')
             @include('play-options')

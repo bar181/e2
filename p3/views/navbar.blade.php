@@ -25,5 +25,6 @@
                 <a class="button btn btn-sm btn-info " href="/play">Continue</a>
             </div>
         </nav>
+
     </div>
 </div>

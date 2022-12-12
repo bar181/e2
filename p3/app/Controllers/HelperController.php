@@ -4,7 +4,42 @@ namespace App\Controllers;
 
 class HelperController extends Controller
 {
-    # convert the player's card keys to hmtl format (e.g. key 0 back to 2♦)
+    /**
+     * Controller for static methods
+     */
+
+    # returns - win, los or tie vs dealer's score
+    public static function getResults($score, $dealerScore)
+    {
+        if ($dealerScore > 21 || $score > $dealerScore) {
+            return "Win";
+        }
+        if ($score == $dealerScore) {
+            return "Tie";
+        }
+        return "Loss";
+    }
+
+
+    # AI stand or hit decision (based on ai level)
+    public static function aiHitValue($aiscore, $ailevel)
+    {
+        $isHit = 0;
+
+        if ($aiscore >= 12 && $ailevel < 2) {
+            $isHit += 10;
+        }
+        if ($aiscore >= 15 && $ailevel == 2) {
+            $isHit += 10;
+        }
+        if ($aiscore >= 17 && $ailevel > 2) {
+            $isHit += 10;
+        }
+        return $isHit;
+    }
+
+
+    # converts string of card keys to array of cards (with value, html display ...)
     public static function getCardDisplay($cardString, $ogDeck)
     {
         $cardKeys = explode(",", $cardString);
@@ -30,13 +65,12 @@ class HelperController extends Controller
         if ($cardsValue > 21 && $aces > 0) {
             $cardsValue -= $aces * 10;
             if ($cardsValue <= 11) {
-                $cardsValue -= 10;
+                $cardsValue += 10;
             }
             if ($cardsValue <= 11) {
-                $cardsValue -= 10;
+                $cardsValue += 10;
             }
         }
-
         return $cardsValue;
     }
 

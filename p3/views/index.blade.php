@@ -12,14 +12,15 @@
         <div class="col-6 m-2">
             <img src="/images/dogs_poker.jpg" class="card-img-top" alt="A painting by Brad ">
             <div class="mt-5 text-center">
-                <h2>E2 Project 2</h2>
+                <h2>E2 Project 3</h2>
                 <h2>by Bradley Ross</h2>
+                <h2>December 2022</h2>
             </div>
         </div>
         <div class="col-6 m-2">
-            <div class="my-2 p-4 card ">
-                <form method="POST" action="/post_setup">
+            <div class="p-4 card ">
 
+                <form method="POST" action="/post_setup">
                     <div class="my-4">
                         <label for="name" class="form-label">Your name</label>
                         <input test="name" type="text" class="form-control" name="name" id="name"
@@ -41,9 +42,11 @@
                         <button test="submit-player" type="submit" class="btn btn-primary mb-3">Get Started</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
+
     @if ($app->errorsExist())
         <ul class="error alert alert-danger px-4">
             @foreach ($app->errors() as $error)

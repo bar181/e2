@@ -6,10 +6,12 @@ use App\Controllers\HelperController;
 
 class PostController extends Controller
 {
-    # This class includes the form post pages for
-    # setup: updates the player's cash, name and multiple options
-    # wager: initializes a new round
-    # play: game play based on if a user hits or stands
+    /**
+        * Form post pages
+        * setup: updates the player's cash, name and multiple options
+        * wager: initializes a new round
+        * play: game play based on if a user hits or stands
+    */
 
     public function post_setup()
     {
@@ -53,10 +55,8 @@ class PostController extends Controller
         #   hands: initialize
         # send user to play page
 
-        $player_id = 1;
-
         # validation error returns redirect
-        # validate player_id to prevent JS manipulation
+        # validate player_id to prevent JS form manipulation
         $this->app->validate([
             'wager' => 'required',
             'player_id' => 'required|numeric',
@@ -64,12 +64,13 @@ class PostController extends Controller
 
         # required variables
         $wager = $this->app->input('wager');
+        $player_id = 1;
         $playerData = $this->app->db()->findById('players', $player_id);
 
-        # ensure wager is more than player cash
-        # form handles this but need to prevent JS form manipulation
+        # ensure wager is less than player cash
+        # form handles this but need to validate in back end
         if ($playerData['cash'] < $wager) {
-            $this->app->redirect('/gameover');
+            $this->app->redirect('/winner');
             return;
         }
 
@@ -104,6 +105,7 @@ class PostController extends Controller
 
     public function post_play()
     {
+        # default variable settings
         $player_id = 1;
         $endRound = true;
 
@@ -151,19 +153,6 @@ class PostController extends Controller
     }
 
 
-    public function getResults($score, $dealerScore)
-    {
-        # returns - win, los or tie vs dealer's score
-        if ($dealerScore > 21 || $score > $dealerScore) {
-            return "Win";
-        }
-        if ($score == $dealerScore) {
-            return "Tie";
-        }
-        return "Loss";
-    }
-
-
     public function endOfRoundProcess($playerData, $handsData, $deckKeys)
     {
         # cards for ai player
@@ -185,15 +174,7 @@ class PostController extends Controller
                 $handsData['aiscore'] = HelperController::getCardsValue($handsData['aicards'], $ogDeck);
 
                 # stand or hit decision (based on ai level)
-                if ($handsData['aiscore'] >= 12 && $ailevel < 2) {
-                    $isHit += 10;
-                }
-                if ($handsData['aiscore'] >= 15 && $ailevel == 2) {
-                    $isHit += 10;
-                }
-                if ($handsData['aiscore'] >= 17 && $ailevel > 2) {
-                    $isHit += 10;
-                }
+                $isHit += HelperController::aiHitValue($handsData['aiscore'], $ailevel);
 
                 if ($isHit < 8) {
                     $cardkey = array_pop($deckKeys);
@@ -211,11 +192,13 @@ class PostController extends Controller
 
         # dealer play
         $isHit = 1;
+        $dealerMustStandValue = 17;
+
         while ($isHit < 8) {
             $handsData['dscore'] = HelperController::getCardsValue($handsData['dcards'], $ogDeck);
 
-            # stand or hit decision (dealer must stand on 17 - hard coded constant)
-            if ($handsData['dscore'] >= 17) {
+            # stand or hit decision (dealer must stand on 17)
+            if ($handsData['dscore'] >= $dealerMustStandValue) {
                 $isHit += 10;
             }
 
@@ -232,11 +215,11 @@ class PostController extends Controller
 
         # update player and ai results
         if (is_null($handsData['presult'])) {
-            $handsData['presult'] = self::getResults($handsData['pscore'], $handsData['dscore']);
+            $handsData['presult'] = HelperController::getResults($handsData['pscore'], $handsData['dscore']);
         }
 
         if ($playerData['multiplayer'] > 0 && is_null($handsData['airesult'])) {
-            $handsData['airesult'] = self::getResults($handsData['aiscore'], $handsData['dscore']);
+            $handsData['airesult'] = HelperController::getResults($handsData['aiscore'], $handsData['dscore']);
         }
 
         # update the hands table

@@ -8,6 +8,7 @@ class AppCommand extends Command
 {
     public function fresh()
     {
+        # use this method to invoke both migration and seeding the databases
         $this->migrate();
         $this->seed();
     }
@@ -60,9 +61,9 @@ class AppCommand extends Command
         # defaults
         $faker = Factory::create();
 
-        $winCards = implode(",", [13, 10]);
+        $winCards = implode(",", [9, 10]);
         $tieCards = implode(",", [8, 9]);
-        $lossCards = implode(",", [2, 5, 9, 10]);
+        $lossCards = implode(",", [2, 0, 5, 8]);
         $winScore = 20;
         $tieScore = 17;
         $lossScore = 23;
@@ -139,7 +140,7 @@ class AppCommand extends Command
             # add simulation to hands
             $handData = [
                 'player_id' => $player_id,  // foreign key player
-                'round_id' => $round_id,     // foreign key rounds - starts at 1
+                'round_id' => $round_id,     // foreign key rounds
                 'pcards' => $pcards,
                 'dcards' => $dcards,
                 'pscore' => $pscore,
@@ -169,7 +170,7 @@ class AppCommand extends Command
         $this->app->db()->run($sql, $data);
 
 
-        dump("seed done");
+        dump("seed done.  Run following sql to view");
         dump("select * from players;");
         dump("select * from rounds;");
         dump("select * from hands;");

@@ -7,22 +7,20 @@ use App\Controllers\HelperController;
 class AppController extends Controller
 {
     /**
-     * This method is triggered by the route "/"
+     * Controller for direct URL access points
      */
+
     public function index()
     {
         # start of game process
         # allow user to set name, cash, and multiplayer
-        # params: player (from players table)
 
         # CONST for single player game (i.e. no registration process)
         $player_id = 1;
-
-        $player = $this->app->db()->findById('players', $player_id);
-        // dump("index", $player);
+        $playerData = $this->app->db()->findById('players', $player_id);
 
         return $this->app->view('index', [
-            'player' => $player
+            'player' => $playerData
         ]);
     }
 
@@ -42,6 +40,20 @@ class AppController extends Controller
             'statsSummary' => $statsSummary,
         ]);
     }
+    public function winner()
+    {
+        # show winner page if player doubles money
+
+        $player_id = 1;
+
+        $playerData = $this->app->db()->findById('players', $player_id);
+        if ($playerData['cash'] > ($playerData['startcash'] * 2)) {
+            return $this->app->view('winner');
+        }
+
+        $this->app->redirect('/');
+        return;
+    }
 
     public function round()
     {
@@ -51,7 +63,7 @@ class AppController extends Controller
         $round = $this->app->db()->findById('rounds', $id);
 
         # add result for display purposes (prevent front end code)
-        # preference for nest ternary
+        # preference for nested ternary
         $round['result'] =  $round['win'] ? 'Win' : ($round['tie'] ? 'Tie' : ($round['loss'] ? 'Loss' : 'Loss: Did not finish round '));
 
         return $this->app->view('round', [
@@ -62,13 +74,12 @@ class AppController extends Controller
     public function wager()
     {
         # show wager page
-
         $player_id = 1;
         $playerData = $this->app->db()->findById('players', $player_id);
 
         # check for end of game (cash nil or double starting cash)
         if ($playerData['cash'] < 10 || $playerData['cash'] > ($playerData['startcash'] * 2)) {
-            $this->app->redirect('/gameover');
+            $this->app->redirect('/');
             return;
         }
 
@@ -82,7 +93,6 @@ class AppController extends Controller
          # show game play - player selects hit or stand
          # validate - redirect to wager if player's process is set to "done"
          # process: get cards to display (new deal or existing cards)
-         # params: cards, score
 
          $player_id = 1;
          $playerData = $this->app->db()->findById('players', $player_id);
@@ -93,12 +103,11 @@ class AppController extends Controller
          if ($play_process == "new") {
              # update database with new deck of cards and assign hold/flop cards
              self::startNewHand($round_id, $playerData);
-
              $playerData['play'] = "play";
              self::updateTableById($playerData, 'players');
          }
 
-         # original deck: show (HTML display), value (card points), style (black or red)
+         # original deck: show (HTML cards display), value (card points), style (black or red)
          $ogDeck = HelperController::createDeck();
          $handsData = $this->app->db()->findByColumn('hands', 'round_id', '=', $round_id)[0];
 
@@ -129,7 +138,7 @@ class AppController extends Controller
 
      public function statsSummary()
      {
-         # get total: win, tie, loss, games to display
+         # get player totals: win, tie, loss, games to display
          $allRounds = $this->app->db()->all('rounds');
          $statsSummary['win'] = 0;
          $statsSummary['tie']= 0;
@@ -171,7 +180,6 @@ class AppController extends Controller
         $handsData['dscore'] = $ogDeck[$cardkey]["value"];
 
         # ai hold card
-
         $handsData['aicards'] = "";
         $handsData['aiscore'] = 0;
         if ($playerData['multiplayer'] > 0) {
@@ -185,17 +193,16 @@ class AppController extends Controller
         $handsData['pcards'] .= "," . $cardkey;
         $handsData['pscore'] = HelperController::getCardsValue($handsData['pcards'], $ogDeck);
 
-
         # update database with new hand data
         $handsData['deckkeys'] = implode(",", $deckKeys);
         self::updateTableById($handsData, 'hands');
     }
 
-
     public function updateTableById($updateDataArray, $tableName)
     {
         # updates the table $tableName for row $updateDataArray['id']
         # updates all fields in $updateDataArray
+        # uses framework's run method
 
         $setQuery = "";
         foreach (array_keys($updateDataArray) as $key) {

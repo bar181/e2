@@ -7,20 +7,6 @@
 + [x] I have integrated testing into my application
 + [ ] I am taking this course for undergraduate credit and have opted out of integrating testing into my application
 
-## Requirements Summary
-+ 3 URL pages: 8 pages complete.  5 direct URL pages (/, wager, play, history, round) plus 3 processing pages
-+ Routes: 9 routes complete.
-+ Controllers: 4 complete.  Includes: Controller, App (process URL pages), Helper (static functions), Post (process forms)
-+ Views: 14 custom blade templates plus amended 404 and template pages. 
-+ Database - 1+ table.  3 complete.  players (player and progress data), rounds (round summary, win/tie/loss), hands (details for the specific hand being played for each player)
-+ Database - Create.  Results saved each round. Player configuration saved each new game.  Hands saved each time player selects to either hit or stand.
-+ Database - Read.  Complete. Used on all pages. 
-+ Database migration and seeds. Complete.  In terminal: "php console App fresh" 
-+ Must use the $app->db() method for all database interactions.  Complete.  This includes: all, findById, insert, createTable (in migrations), run (custom update method uses run)
-+ Form validation. Complete for 4 form fields. See: PostController/post_setup, PostController/post_wager.  Radio buttons use both front end "checked" and backend default values.
-+ Testing for graduate students: 9 tests, 19 assertions.  See below.
-
-
 ## Outside resources
 
 + [timestamp format with php ](https://stackoverflow.com/questions/5632662/saving-timestamp-in-mysql-table-using-php)
@@ -28,15 +14,35 @@
 + [display html entities in blade template](https://stackoverflow.com/questions/29253979/displaying-html-with-blade-shows-the-html-code)
 + [cannot  access $this in a static function ](https://stackoverflow.com/questions/2286696/)
 + [UPDATE query using PDO  ](https://phpdelusions.net/pdo_examples/update)
++ [Bootstrap 5.2 CSS only](https://getbootstrap.com/docs/5.2/getting-started/introduction/)
++ [See Project 2 resource for history of other resources ](https://github.com/bar181/e2/blob/main/p2/README.md)
 
 
 
 ## Notes for instructor
-+ This game uses database updates allowing players to return to the same point in the game.  There is a button "continue" in the navigation bar if you take a break.  Personal preference to use databases instead of sessions 
++ This game uses database updates (based on the framework's run method) allowing players to return to the same point in the game.  
++ Added a requirements summary below to explicitly outline each reqirement
++ Comments and descriptive names were added throughout; also added a Design Summary (below) as a quick reference guide for each page/process.  
++ Yes, that that is an image of a painting I did on the home page
++ Enjoy !
 
 
+## Requirements Summary
++ 3 URL pages: 9 pages complete.  6 direct URL pages (/, wager, play, history, round, winner) plus 3 processing pages
++ Routes: 9 routes complete.
++ Controllers: 4 complete.  Includes: Controller, App (process URL pages), Helper (static functions), Post (process forms)
++ Views: 14 custom blade templates plus amended 404 and template pages. 
++ Database - 1+ table.  3 complete.  players (player and progress data), rounds (round summary, win/tie/loss), hands (details for the specific hand being played for each player)
++ Database - Create.  Complete.  See migration and seeds..
++ Database - Read.  Complete. Used on all pages. 
++ Database migration and seeds. Complete.  In terminal: "php console App fresh" 
++ Must use the $app->db() method for all database interactions.  Complete.  This includes: all, findById, insert, createTable (in migrations), run (custom update method uses run)
++ Form validation. Complete for 4 form fields. See: PostController/post_setup, PostController/post_wager.  Radio buttons use both front end "checked" and backend default values.
++ Testing for graduate students: 9 tests, 19 assertions.  See output below.
++ Use README template provided.  Done with extra sections.
 
 ## Design Summary
++ Project 3: Database integration - Game w/ history
 + Blackjack game using frameworks and saving results to a database
 
 ### Set up (route /)
@@ -59,7 +65,8 @@
 + Uses helper functions to calculate a player's point value, display cards
 + View includes blade templates for each section.  If statement are use to show/hide blades (e.g. the round over blade will appear once the round is over)
 + During game play (before end of round) the user can select to either stand or hit for more cards
-+ The player repeats wager/play process until they run out of funds
++ Default hit or stand option based on recommendation
++ The player repeats wager/play process until they run out of funds or double their money
 + End of game blade appears when use player is out of funds
 
 ### Form handling for play (route /post_play)
@@ -79,24 +86,27 @@
 ### Round Details (route / round)
 + Shows details for a specific rounds
 
+### Winner (route /winner)
++ Verifies player has doubled their starting cash and shows a you won page 
+
 
 ### Codeception testing output
 
 ```
 Codeception PHP Testing Framework v5.0.5 https://helpukrainewin.org
 
-Tests.Acceptance Tests (9) ------------------------------------------------------------------------------------------------------------------
+Tests.Acceptance Tests (9) ----------------------------------------------------------------------------
 PagesCest: History and round page
 Signature: Tests\Acceptance\PagesCest:historyAndRoundPage
 Test: tests/Acceptance/PagesCest.php:historyAndRoundPage
 Scenario --
  I am on page "/history"
  I grab multiple "[test=round-link]"
- history roundCount 30
- I assert greater than or equal 10,30
+ history roundCount 10
+ I assert greater than or equal 10,10
  I grab text from "[test=round-link]"
- I click "Round: 30 on 2022-12-09 15:32:37"
- I see "2022-12-09 15:32:37"
+ I click "Round: 10 on 2022-12-11 10:24:50"
+ I see "2022-12-11 10:24:50"
  PASSED 
 
 PagesCest: Game stats div shows
@@ -129,15 +139,12 @@ Scenario --
  I see element "[test=player-play]"
  I see element "[test=player-hit]"
  I grab text from "[test=player-score]"
- start points: 21
+ start points: 19
  I select option "[test=player-hit]","hit"
  I click "[test=hitstand-submit]"
  I see element "[test=player-score]"
  I grab text from "[test=player-score]"
- I select option "[test=player-hit]","hit"
- I click "[test=hitstand-submit]"
- I grab text from "[test=player-score]"
- added points: 30
+ added points: 27
  I see element "[test=game-over]"
  PASSED 
 
@@ -214,8 +221,8 @@ Scenario --
  I click "[test=submit-player]"
  PASSED 
 
----------------------------------------------------------------------------------------------------------------------------------------------
-Time: 00:00.931, Memory: 10.00 MB
+-------------------------------------------------------------------------------------------------------
+Time: 00:01.444, Memory: 10.00 MB
 
 OK (9 tests, 19 assertions)
 
